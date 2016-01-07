@@ -1,0 +1,7 @@
+{% macro log_out_link() %}
+    <form action="{{ url_for("onboarding.log_out") }}" method="POST" style="display: inline;"
+          class="js-ob2--log-out-link-form">
+        <input type="hidden" name="_csrf_token" value="{{ generate_csrf_token() }}" />
+        {{ caller() }}
+    </form>
+{% endmacro %}

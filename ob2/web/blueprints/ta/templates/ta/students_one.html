@@ -1,0 +1,205 @@
+{% from "macros/datatables.html" import cell_assignment_name, cell_grade, cell_slip, cell_weight,
+                                        cell_grade_updated, cell_due_date, cell_gradeslog_name,
+                                        cell_gradeslog_source, cell_assignment_name, cell_grade,
+                                        cell_gradeslog_timestamp, cell_gradeslog_description,
+                                        cell_source %}
+{% from "macros/flash.html" import flash_all %}
+{% extends "_ta.html" %}
+{% block content %}
+{{ flash_all() }}
+{% for id, name, sid, login, github, email in [student] %}
+{% if groups_enabled %}
+<div class="mdl-cell mdl-cell--6-col">
+{% else %}
+<div class="mdl-cell mdl-cell--12-col">
+{% endif %}
+    <h4>Student Details</h4>
+    <table class="ob2-fullwidth mdl-data-table mdl-js-data-table mdl-shadow--2dp mdl-color--white">
+        <tbody>
+            <tr>
+                <td class="mdl-data-table__cell--non-numeric">Name</td>
+                <td class="mdl-data-table__cell--non-numeric">{{ name }}</td>
+            </tr>
+            {% if student_photos_enabled %}
+            <tr class="ob2-no-hover">
+                <td class="mdl-data-table__cell--non-numeric">Photo</td>
+                <td class="mdl-data-table__cell--non-numeric ob2-multiline-row">
+                {% if photo_base64 %}
+                    <img class="ob2-photo" src="data:image/jpeg;base64,{{ photo_base64 }}" />
+                {% else %}
+                    None
+                {% endif %}
+                </td>
+            </tr>
+            {% endif %}
+            <tr>
+                <td class="mdl-data-table__cell--non-numeric">Student ID</td>
+                <td class="mdl-data-table__cell--non-numeric">{{ sid }}</td>
+            </tr>
+            <tr>
+                <td class="mdl-data-table__cell--non-numeric">Login</td>
+                {{ cell_source(login, link_to="ta") }}
+            </tr>
+            <tr>
+                <td class="mdl-data-table__cell--non-numeric">GitHub Username</td>
+                <td class="mdl-data-table__cell--non-numeric">
+                    <a rel="noreferrer" href="{{ github_user_url(github) }}">{{ github }}</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="mdl-data-table__cell--non-numeric">Email</td>
+                <td class="mdl-data-table__cell--non-numeric">
+                    <a href="mailto:{{ email }}">{{ email }}</a>
+                </td>
+            </tr>
+            {% if groups_enabled %}
+            <tr>
+                <td class="mdl-data-table__cell--non-numeric">Group limit</td>
+                <td class="mdl-data-table__cell--non-numeric">{{ grouplimit }}</td>
+            </tr>
+            {% endif %}
+            <tr>
+                <td class="mdl-data-table__cell--non-numeric">Database ID</td>
+                <td class="mdl-data-table__cell--non-numeric">{{ id }}</td>
+            </tr>
+            <tr>
+                <td class="mdl-data-table__cell--non-numeric">Staff</td>
+                <td class="mdl-data-table__cell--non-numeric">
+                    {{ "True" if super_ else "False" }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% if groups_enabled %}
+<div class="mdl-cell mdl-cell--6-col">
+    <h4>Groups</h4>
+    <table class="ob2-fullwidth mdl-data-table mdl-js-data-table mdl-shadow--2dp
+                  mdl-color--white">
+        <thead>
+            <tr>
+                <th class="mdl-data-table__cell--non-numeric">Name</th>
+                <th class="mdl-data-table__cell--non-numeric">Members</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for group, members in groups %}
+            <tr>
+                <td class="mdl-data-table__cell--non-numeric">
+                    <a href="{{ url_for("ta.repo", name=group) }}">
+                        {{ group }}
+                    </a>
+                </td>
+                <td class="mdl-data-table__cell--non-numeric">
+                    {%- for name, github in members -%}
+                        {{- list_conjunction(loop.index0, loop.length) -}}
+                        <a href="{{ url_for("ta.students_one", identifier=github, type_="github") }}">
+                            {{- name -}}
+                        </a>
+                    {%- endfor -%}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td class="mdl-data-table__cell--non-numeric" colspan="2">
+                    {{ name }} has not joined any groups yet.
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <h6>Group limit</h6>
+    <p>
+        The group limit is how many <strong>more</strong> groups a student can join or create.<br />
+        The current value for {{ name }} is {{ grouplimit }}.
+    </p>
+    <p>
+        <form action="{{ url_for("ta.modify_grouplimit_now") }}" method="post">
+            <input type="hidden" name="_csrf_token" value="{{ generate_csrf_token() }}" />
+            <input type="hidden" name="f_user_id" value="{{ id }}" />
+            <button type="submit" style="text-transform: none;" name="f_action" value="add"
+                    class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-color--green-100">
+                <code>&plus;</code>
+            </button>
+            <button type="submit" style="text-transform: none;" name="f_action" value="subtract"
+                    class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-color--grey-300">
+                <code>&minus;</code>
+            </button>
+        </form>
+    </p>
+</div>
+{% endif %}
+<div class="mdl-cell mdl-cell--12-col">
+    <h4>Actions</h4>
+    <p>
+        <form action="{{ url_for("ta.login_as") }}" method="post">
+            <input type="hidden" name="_csrf_token" value="{{ generate_csrf_token() }}" />
+            <input type="hidden" name="f_user_id" value="{{ id }}" />
+            <button type="submit" class="mdl-button mdl-js-button mdl-js-ripple-effect
+                                         mdl-color--amber">
+                Log in as {{ name }}
+            </button>
+        </form>
+    </p>
+    <h4>Assignments</h4>
+    <table class="ob2-fullwidth mdl-data-table mdl-js-data-table mdl-shadow--2dp
+                  mdl-color--white">
+        <thead>
+            <tr>
+                <th class="mdl-data-table__cell--non-numeric">Name</th>
+                <th class="mdl-data-table__cell--non-numeric">Grade</th>
+                <th class="mdl-data-table__cell--non-numeric">Slip {{ slip_unit_name() }}</th>
+                <th class="mdl-data-table__cell--non-numeric">Weight</th>
+                <th class="mdl-data-table__cell--non-numeric">Updated</th>
+                <th class="mdl-data-table__cell--non-numeric">Deadline</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for name, full_score, weight, due_date, score, slipunits, updated in assignments_info %}
+            <tr>
+                {{ cell_assignment_name(name, link_to="ta") }}
+                {{ cell_grade(score, full_score) }}
+                {{ cell_slip(slipunits) }}
+                {{ cell_weight(weight) }}
+                {{ cell_grade_updated(updated) }}
+                {{ cell_due_date(due_date) }}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <h4>Gradeslog</h4>
+    <table class="ob2-fullwidth mdl-data-table mdl-js-data-table mdl-shadow--2dp
+                  mdl-color--white">
+        <thead>
+            <tr>
+                <th class="mdl-data-table__cell--non-numeric">Transaction name</th>
+                <th class="mdl-data-table__cell--non-numeric">Source</th>
+                <th class="mdl-data-table__cell--non-numeric">Assignment</th>
+                <th class="mdl-data-table__cell--non-numeric">Score</th>
+                <th class="mdl-data-table__cell--non-numeric">Timestamp</th>
+                <th class="mdl-data-table__cell--non-numeric">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for transaction_name, source, assignment, score, slipunits, updated, description,
+               full_score in events %}
+            <tr>
+                {{ cell_gradeslog_name(transaction_name) }}
+                {{ cell_gradeslog_source(source) }}
+                {{ cell_assignment_name(assignment, link_to="ta") }}
+                {{ cell_grade(score, full_score) }}
+                {{ cell_gradeslog_timestamp(updated) }}
+                {{ cell_gradeslog_description(description) }}
+            </tr>
+        {% else %}
+            <tr>
+                <td class="mdl-data-table__cell--non-numeric" colspan="6">
+                    There is no gradeslog activity for {{ name }} yet.
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endfor %}
+{% endblock %}

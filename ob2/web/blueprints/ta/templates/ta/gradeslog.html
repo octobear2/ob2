@@ -1,0 +1,51 @@
+{% from "macros/datatables.html" import cell_gradeslog_name, cell_gradeslog_source,
+                                        cell_gradeslog_student, cell_assignment_name, cell_grade,
+                                        cell_slip, cell_gradeslog_timestamp,
+                                        cell_gradeslog_description %}
+{% from "macros/pagination.html" import pagination %}
+{% extends "_ta.html" %}
+{% block content %}
+<div class="mdl-cell mdl-cell--12-col">
+    <h4>Gradeslog</h4>
+    {% if page > 1 %}
+    {{ pagination(page, "ta.gradeslog", more_pages) }}
+</div>
+<div class="mdl-cell mdl-cell--12-col">
+    {% endif %}
+    <table class="ob2-fullwidth mdl-data-table mdl-js-data-table mdl-shadow--2dp
+                  mdl-color--white">
+        <thead>
+            <tr>
+                <th class="mdl-data-table__cell--non-numeric">Transaction name</th>
+                <th class="mdl-data-table__cell--non-numeric">Source</th>
+                <th class="mdl-data-table__cell--non-numeric">Student</th>
+                <th class="mdl-data-table__cell--non-numeric">Assignment</th>
+                <th class="mdl-data-table__cell--non-numeric">Score</th>
+                <th class="mdl-data-table__cell--non-numeric">Slip {{ slip_unit_name() }}</th>
+                <th class="mdl-data-table__cell--non-numeric">Timestamp</th>
+                <th class="mdl-data-table__cell--non-numeric">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for transaction_name, source, user_id, name, github, super, assignment, score, slipunits,
+               updated, description, full_score in events %}
+            <tr>
+                {{ cell_gradeslog_name(transaction_name) }}
+                {{ cell_gradeslog_source(source) }}
+                {{ cell_gradeslog_student(name, github, user_id, super) }}
+                {{ cell_assignment_name(assignment, link_to="ta") }}
+                {{ cell_grade(score, full_score) }}
+                {{ cell_slip(slipunits, display_zero=True) }}
+                {{ cell_gradeslog_timestamp(updated) }}
+                {{ cell_gradeslog_description(description) }}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% if page != 1 or more_pages %}
+<div class="mdl-cell mdl-cell--12-col">
+    {{ pagination(page, "ta.gradeslog", more_pages) }}
+</div>
+{% endif %}
+{% endblock %}

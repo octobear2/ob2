@@ -1,0 +1,58 @@
+{% from "macros/datatables.html" import cell_build_name, cell_status, cell_commit, cell_message,
+                                        cell_job, cell_build_started %}
+{% from "macros/pagination.html" import pagination %}
+{% extends "_dashboard.html" %}
+{% block content %}
+<div class="mdl-cell mdl-cell--12-col">
+    <h4>Builds</h4>
+    {% if page > 1 %}
+    {{ pagination(page, "dashboard.builds", more_pages) }}
+</div>
+<div class="mdl-cell mdl-cell--12-col">
+    {% endif %}
+    <table class="ob2-fullwidth mdl-data-table mdl-js-data-table mdl-shadow--2dp
+                  mdl-color--white">
+        <thead>
+            <tr>
+                <th class="mdl-data-table__cell--non-numeric">Build name</th>
+                <th class="mdl-data-table__cell--non-numeric">Status</th>
+                <th class="mdl-data-table__cell--non-numeric">Commit</th>
+                <th class="mdl-data-table__cell--non-numeric">Message</th>
+                <th class="mdl-data-table__cell--non-numeric">Job</th>
+                <th class="mdl-data-table__cell--non-numeric">Started</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for (build_name, source, status, score, commit, message, job, started,
+                    full_score) in builds_info %}
+            <tr>
+                {{ cell_build_name(build_name) }}
+                {{ cell_status(status, score, full_score) }}
+                {{ cell_commit(commit, source) }}
+                {{ cell_message(message) }}
+                {{ cell_job(job) }}
+                {{ cell_build_started(started) }}
+            </tr>
+            {% else %}
+            <tr>
+                <td class="mdl-data-table__cell--non-numeric mdl-color-text--grey-600" colspan="6">
+                    <h5>There's nothing here yet!</h5>
+                    <p style="margin-bottom: 28px;">
+                        Once you start pushing code to GitHub, builds will appear here
+                        automatically.<br />
+                        You can also browse the
+                        <a href="{{ url_for("dashboard.assignments") }}">assignments page</a> to
+                        initiate builds manually.
+                    </p>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% if page != 1 or more_pages %}
+<div class="mdl-cell mdl-cell--12-col">
+    {{ pagination(page, "dashboard.builds", more_pages) }}
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,34 @@
+{% from "macros/datatables.html" import cell_assignment_name, cell_grade, cell_slip, cell_weight,
+                                        cell_grade_updated, cell_due_date %}
+{% from "macros/flash.html" import flash_all %}
+{% extends "_dashboard.html" %}
+{% block content %}
+<div class="mdl-cell mdl-cell--12-col">
+    <h4>Assignments</h4>
+    <table class="ob2-fullwidth mdl-data-table mdl-js-data-table mdl-shadow--2dp
+                  mdl-color--white">
+        <thead>
+            <tr>
+                <th class="mdl-data-table__cell--non-numeric">Name</th>
+                <th class="mdl-data-table__cell--non-numeric">Grade</th>
+                <th class="mdl-data-table__cell--non-numeric">Slip {{ slip_unit_name() }}</th>
+                <th class="mdl-data-table__cell--non-numeric">Weight</th>
+                <th class="mdl-data-table__cell--non-numeric">Updated</th>
+                <th class="mdl-data-table__cell--non-numeric">Deadline</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for name, full_score, weight, due_date, score, slipunits, updated in assignments_info %}
+            <tr>
+                {{ cell_assignment_name(name) }}
+                {{ cell_grade(score, full_score) }}
+                {{ cell_slip(slipunits) }}
+                {{ cell_weight(weight) }}
+                {{ cell_grade_updated(updated) }}
+                {{ cell_due_date(due_date) }}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

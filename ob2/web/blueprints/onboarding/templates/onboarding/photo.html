@@ -1,0 +1,37 @@
+{% from "macros/flash.html" import flash_all %}
+{% extends "_onboarding.html" %}
+{% block content %}
+<script src="{{ url_for("static", filename="js/photocrop.js") }}"></script>
+<script src="{{ url_for("static", filename="js/photocrop_onboarding.js") }}"></script>
+{{ flash_all() }}
+<div class="ob2-content mdl-cell mdl-cell--12-col mdl-color--white
+            mdl-color-text--grey-800 mdl-shadow--2dp">
+    <form action="{{ url_for("onboarding.photo") }}" method="post" autocomplete="off">
+        <h1 class="mdl-typography--headline">Upload a photo</h1>
+        <p>
+            Please provide a photo of you. We&rsquo;ll use your photo to help your TA identify you, so
+            make sure your face takes up the whole photo.
+        </p>
+        <input type="hidden" name="_csrf_token" value="{{ generate_csrf_token() }}" />
+        <p class="ob2-fileinput">
+            <input class="js-photocrop-fileinput" id="f-photo" type="file" />
+            <label class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-color--grey-200"
+                   for="f-photo">
+                Choose a file
+            </label>
+        </p>
+        <input type="hidden" name="f_photo_cropped" value="" class="js-photocrop-output" />
+        <p class="js-photocrop-cropper" style="display: none;"></p>
+        <p class="js-photocrop-submit" style="display: none;">
+            <button type="submit" class="mdl-button mdl-js-button mdl-js-ripple-effect
+                                         mdl-color--amber">
+                Crop and save photo
+            </button>
+            <button type="button" class="js-photocrop-cancel mdl-button mdl-js-button
+                                         mdl-js-ripple-effect mdl-color--grey-200">
+                Pick a different photo
+            </button>
+        </p>
+    </form>
+</div>
+{% endblock %}

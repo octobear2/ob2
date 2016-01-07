@@ -1,0 +1,30 @@
+{% from "macros/datatables.html" import row_worker_identifier, row_worker_status,
+                                        row_worker_updated %}
+{% extends "_ta.html" %}
+{% block content %}
+{% for identifier, status, updated, log in [worker_info] %}
+<div class="mdl-cell mdl-cell--12-col">
+    <h4>Worker Details</h4>
+    <table class="ob2-fullwidth mdl-data-table mdl-js-data-table mdl-shadow--2dp mdl-color--white">
+        <tbody>
+            {{ row_worker_identifier(identifier) }}
+            {{ row_worker_status(status) }}
+            {{ row_worker_updated(updated, status) }}
+        </tbody>
+    </table>
+    <h4>Worker Log</h4>
+    <p>This is a reverse chronological summary of what this grading worker has done.</p>
+    <dl class="ob2-dl">
+    {% for updated, message, exc in log[::-1] %}
+        <dt class="ob2-dt">{{ parse_to_relative(updated, 86400, -86400) }}</dt>
+        <dd class="ob2-dd">
+            {{ message }}
+        {% if exc %}
+            <pre class="ob2-build-log" style="margin-left: 26px;">{{ exc }}</pre>
+        {% endif %}
+        </dd>
+    {% endfor %}
+    </dl>
+</div>
+{% endfor %}
+{% endblock %}

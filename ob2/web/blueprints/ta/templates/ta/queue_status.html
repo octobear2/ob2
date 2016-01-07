@@ -1,0 +1,63 @@
+{% from "macros/datatables.html" import cell_worker_identifier, cell_worker_status,
+                                        cell_worker_updated %}
+{% extends "_ta.html" %}
+{% block content %}
+<div class="mdl-cell mdl-cell--12-col">
+    <h4>Queue workers</h4>
+    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp mdl-color--white">
+        <thead>
+            <tr>
+                <th class="mdl-data-table__cell--non-numeric">Identifier</th>
+                <th class="mdl-data-table__cell--non-numeric">Status</th>
+                <th class="mdl-data-table__cell--non-numeric">Job started</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for identifier, status, updated in queue_workers %}
+            <tr>
+                {{ cell_worker_identifier(identifier, link_to="ta") }}
+                {{ cell_worker_status(status) }}
+                {{ cell_worker_updated(updated, status) }}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <h4>Queue jobs</h4>
+    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp mdl-color--white">
+        <thead>
+            <tr>
+                <th class="mdl-data-table__cell--non-numeric">Job name</th>
+                <th class="mdl-data-table__cell--non-numeric">Repo</th>
+                <th class="mdl-data-table__cell--non-numeric">Trigger</th>
+                <th class="mdl-data-table__cell--non-numeric">Entered</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for job in queue_jobs %}
+            <tr>
+                <td class="mdl-data-table__cell--non-numeric">
+                    <a href="{{ url_for("ta.builds_one", name=job.build_name) }}">
+                        {{ job.build_name }}
+                    </a>
+                </td>
+                <td class="mdl-data-table__cell--non-numeric">
+                    <a href="{{ url_for("ta.repo", name=job.source) }}">{{ job.source }}</a>
+                </td>
+                <td class="mdl-data-table__cell--non-numeric">
+                    {{ job.trigger }}
+                </td>
+                <td class="mdl-data-table__cell--non-numeric">
+                    {{ parse_to_relative(job.updated, 86400, -86400) }}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td class="mdl-data-table__cell--non-numeric" colspan="4">
+                    The queue is empty.
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,196 @@
+---
+# YOU SHOULD NOT EDIT THIS FILE.
+
+# Enables the web debugger for werkzeug and enables verbose debugging.
+debug_mode: true
+
+# The location of the SQLite database (relative to this file)
+database_path: ../db.sqlite3
+
+# A name like "CS162: Operating Systems"
+course_name: "[course_name]"
+
+# A course identifier like "CS162"
+course_number: "[course_number]"
+
+# This should be something like "cs162-%s"
+# It is used as a Python format string, with 1 string argument (the student's login)
+course_login_format: "[course_login_format %s]"
+
+# The name of the cookie that stores our session data. You may want to change this to something
+# specific to your course.
+flask_cookie_name: "octobear2_session_cookie"
+
+# WITH THIS KEY, AN ATTACKER COULD LOG IN AS ANY USER. BE CAREFUL!
+# If you leave it empty, we will generate a random secret key, every time the autograder starts.
+# This means that all sessions will be invalidated on restart (all users will be logged out).
+# If you're okay with that, then just leave it empty.
+flask_secret_key: ""
+
+# On/Off switch for the mailer daemon. If this is off, no email will be sent.
+mailer_enabled: false
+
+# The "From:" header in our outbound emails. You should change this to something specific to your
+# course.
+mailer_from: octobear2@eecs.berkeley.edu
+
+# The name of the GitHub organization
+github_organization: octobear2
+
+# A list of GitHub usernames that are authorized to access the TA section of the web interface.
+github_ta_usernames:
+- rogerhub
+
+# Whether to use private repos (should be true in production)
+github_private_repos: false
+
+# On/Off switch for GitHub API calls that are NOT read-only. Leave this off if you're running this
+# on a local machine, unless you're testing GitHub API stuff. It's recommended to create a dummy
+# organization account to test GitHub API stuff with.
+github_read_only_mode: true
+
+# In order to use GitHub OAuth, you need to register a GitHub API application. Go to:
+#   GitHub -> Settings -> Applications -> Developer Applications (Tab) -> Register new application
+# Then, create a new application (if you're using this for developing code on your local VM, then
+# set your redirect URL to http://localhost:5002/log_in/oauth_continue/ or something similar.)
+github_oauth_consumer_key: ""
+github_oauth_consumer_secret: ""
+
+# GitHub -> Settings -> Personal access tokens
+#
+# These permissions are required:
+# - repo
+# - write:repo_hook
+# - admin:org
+#
+# These permissions are recommended (you can use an IPython shell to manage your student repos, in
+# which case these permissions will be handy):
+# - delete_repo
+github_admin_access_token: ""
+
+# GitHub -> Organization Settings -> Webhooks -> Add webhook -> Secret
+# Multiple secrets can be specified, and any one of them will pass
+github_webhook_secrets: []
+
+# The slip units feature allows you to keep track of late submissions. The grace period is the
+# number of seconds after the official deadline, where slipunits will not be used (measured in
+# seconds).
+slip_unit_name_singular: "day"
+slip_unit_name_plural: "days"
+slip_seconds_per_unit: 86400
+slip_grace_period: 0
+
+# On/Off switch for the groups feature. You can turn this feature on midway through the semester, if
+# you would like. Once this feature is enabled, you should not switch it off again.
+groups_enabled: false
+
+# Minimum and maximum size of groups.
+group_min_size: 1
+group_max_size: 2
+
+# On/Off switch for instructional account forms. Students will receive an instructional account form
+# (corresponding to their class login) during onboarding, if this is enabled.
+inst_account_enabled: false
+
+# The directory containing instructional account forms (relative to this file). For example, if this
+# is set to 'inst_account_forms/', then we expect to find an instructional account form PDF at
+# 'inst_account_forms/aa.pdf' for the login 'aa'.
+inst_account_forms_path: ""
+
+# On/Off switch for the student photos feature. Students will be prompted to upload a photo during
+# onboarding, if this is enabled.
+student_photos_enabled: true
+
+# The local timezone. All timestamps are displayed in this timezone. You should never change this
+# if the database already contains timestamps, because all timestamps are stored in local time.
+# (This is an intentional design decision, because using local timestamps makes it easier for TA's
+# to interact directly with the database.)
+timezone: "US/Pacific"
+
+# An optional AppArmor profile to apply to new Docker containers. Leave this blank if you do not
+# need a special AppArmor profile.
+dockergrader_apparmor_profile: ""
+
+# The interface to listen on for HTTP requests. If you're using a reverse proxy, you probably want
+# to set this to '127.0.0.1', to prevent direct external access to this web server.
+web_host: "0.0.0.0"
+
+# The port number to bind on (in conjunction with the value of 'web_host')
+web_port: 5002
+
+# The public hostname (and port number) of the autograder. Do not include a path or a protocol.
+# If you are running behind a reverse proxy, then this port number does not need to match the value
+# of 'web_port'.
+web_public_host: "localhost:5002"
+
+# You can run the autograder in a subdirectory. For example, if the autograder is running at
+# https://example.com/tools/autograder/, then you should set this to "tools/autograder" (always omit
+# the trailing and leading slash). You can set this to "" if the autograder is not running in a
+# subdirectory.
+web_public_root: ""
+
+# Set this to true if HTTPS is used. This marks cookies as 'secure' (HTTPS-only) and sets a
+# 'https://' prefix for links used in email templates. You definitely want to use HTTPS in
+# production (without HTTPS, it's trivial to steal a TA's credentials on open WiFi and change all
+# the grades).
+web_https: false
+
+# Supported web server types are 'werkzeug' and 'cherrypy'. I suggest using 'cherrypy' in
+# production. If you leave this blank, then ob2 will pick a web server based on the value of
+# 'debug_mode'.
+web_server_type:
+
+# Set this to true if you're using a reverse proxy (like NGINX). You probably want to have NGINX do
+# SSL termination for ob2 in production.
+web_behind_proxy: false
+
+# The list of assignments in the autograder.
+#
+# - If an assignment is "manual_grading=True", then some of the fields are not required. Otherwise,
+#   all the fields are necessary.
+# - Make sure you account for Daylight Savings Time in the timestamps. In California, the timezone
+#   is -0800 in the winter and -0700 in the summer.
+# - You should use lowercase letters and dashes for assignment names (e.g. [-a-z]+)
+assignments:
+
+- name:                hw0
+  full_score:          10.0
+  min_score:           0.0
+  max_score:           10.0
+  weight:              3.14159
+  category:            Homework
+  is_group:            false
+  manual_grading:      false
+  not_visible_before:  "2016-01-01 00:00:00 -0800"
+  start_auto_building: "2016-01-01 00:00:00 -0800"
+  end_auto_building:   "2016-12-31 00:00:00 -0800"
+  due_date:            "2016-12-31 23:59:59 -0800"
+  cannot_build_after:  "2016-12-31 23:59:59 -0800"
+
+- name:                midterm
+  full_score:          100.0
+  min_score:           0.0
+  max_score:           100.0
+  weight:              1.00000
+  category:            Exams
+  is_group:            false
+  manual_grading:      true
+  not_visible_before:  "2015-01-01 00:00:00 -0800"
+  due_date:            "2015-01-01 00:00:00 -0800"
+
+## Template for new assignments.
+## WARN: Make sure the timezone accounts for Daylight Savings Time
+#
+# - name:                assignment_name
+#   full_score:          0.0
+#   min_score:           0.0
+#   max_score:           0.0
+#   weight:              0.0
+#   category:            Category
+#   is_group:            true
+#   manual_grading:      false
+#   not_visible_before:  "2015-01-01 00:00:00 -0800"
+#   start_auto_building: "2015-01-01 00:00:00 -0800"
+#   end_auto_building:   "2015-01-01 00:00:00 -0800"
+#   due_date:            "2015-01-01 00:00:00 -0800"
+#   cannot_build_after:  "2015-01-01 00:00:00 -0800"

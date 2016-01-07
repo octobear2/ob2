@@ -1,0 +1,17 @@
+{% macro flash_message(title, color="red") %}
+    <div class="ob2-content mdl-cell mdl-cell--12-col mdl-color--{{ color }}-800
+                mdl-color-text--grey-100 mdl-shadow--2dp">
+        <strong style="padding-right: 10px;">{{ title|upper }}</strong>
+        {{ caller() }}
+    </div>
+{% endmacro %}
+
+{% macro flash_all() %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            {% call flash_message(category, flash_color(category)) %}
+                {{ message }}
+            {% endcall %}
+        {% endfor %}
+    {% endwith %}
+{% endmacro %}

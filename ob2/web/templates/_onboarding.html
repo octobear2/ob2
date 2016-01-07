@@ -1,0 +1,20 @@
+{% from "macros/log_out.html" import log_out_link %}
+{% extends "_base.html" %}
+{% block body %}
+<div class="mdl-layout mdl-js-layout">
+    <main class="mdl-layout__content mdl-color--grey-100">
+        <div class="ob2-main-thin mdl-grid">
+            {% block content %}
+            {% endblock %}
+        </div>
+        <div class="ob2-footer mdl-color-text--grey-600">
+            You are logged in as {{ github }}. Not you?
+            {% call log_out_link() %}
+                <a href="{{ url_for("onboarding.log_out") }}">
+                    Log out
+                </a>
+            {% endcall %}
+        </div>
+    </main>
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% from "macros/datatables.html" import row_gradeslog_name, row_gradeslog_source,
+                                        row_gradeslog_student, row_assignment_name, row_grade,
+                                        row_slip, row_grade_updated %}
+{% extends "_ta.html" %}
+{% block content %}
+{% for transaction_name, source, user_id, name, github, super, assignment, score, slipunits,
+       updated, description in [entry] %}
+<div class="mdl-cell mdl-cell--12-col">
+    <h4>Gradeslog Event Details</h4>
+    <table class="ob2-fullwidth mdl-data-table mdl-js-data-table mdl-shadow--2dp mdl-color--white">
+        <tbody>
+            {{ row_gradeslog_name(transaction_name) }}
+            {{ row_gradeslog_source(source) }}
+            {{ row_gradeslog_student(name, github, user_id, super) }}
+            {{ row_assignment_name(assignment, link_to="ta") }}
+            {{ row_grade(score, full_score, label="Score") }}
+            {{ row_slip(slipunits, display_zero=True) }}
+            {{ row_grade_updated(updated, label="Timestamp") }}
+        </tbody>
+    </table>
+    <h4>Description</h4>
+    <p>
+    {% if description != None %}
+        {{ description }}
+    {% else %}
+        No description available.
+    {% endif %}
+    </p>
+</div>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,44 @@
+{% from "macros/datatables.html" import cell_gradeslog_student, cell_source %}
+{% extends "_ta.html" %}
+{% block content %}
+<div class="mdl-cell mdl-cell--12-col">
+    <h4>All students</h4>
+    <table class="ob2-fullwidth mdl-data-table mdl-js-data-table mdl-shadow--2dp
+                  mdl-color--white">
+        <thead>
+            <tr>
+                <th class="mdl-data-table__cell--non-numeric">Name</th>
+                <th class="mdl-data-table__cell--non-numeric">Student ID</th>
+                <th class="mdl-data-table__cell--non-numeric">Login</th>
+                <th class="mdl-data-table__cell--non-numeric">GitHub Username</th>
+                <th class="mdl-data-table__cell--non-numeric">Email</th>
+                <th class="mdl-data-table__cell--non-numeric">Database ID</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for user_id, name, sid, login, github, email, super in students %}
+        {% if github == github_username %}
+            <tr class="mdl-color--yellow-50">
+        {% else %}
+            <tr>
+        {% endif %}
+                {{ cell_gradeslog_student(name, github, user_id, super) }}
+                <td class="mdl-data-table__cell--non-numeric">{{ sid }}</td>
+                {{ cell_source(login, link_to="ta") }}
+                <td class="mdl-data-table__cell--non-numeric">
+                {% if github %}
+                    <a rel="noreferrer" href="{{ github_user_url(github) }}">{{ github }}</a>
+                {% else %}
+                    &mdash;
+                {% endif %}
+                </td>
+                <td class="mdl-data-table__cell--non-numeric">
+                    <a href="mailto:{{ email }}">{{ email }}</a>
+                </td>
+                <td class="mdl-data-table__cell--non-numeric">{{ user_id }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

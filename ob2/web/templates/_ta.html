@@ -1,0 +1,59 @@
+{% from "macros/log_out.html" import log_out_link %}
+{% extends "_base.html" %}
+{% block colorscheme %}blue_grey-blue{% endblock %}
+{% block body %}
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-drawer">
+    <div class="mdl-layout__drawer mdl-color--blue">
+        <div class="ob2-drawer-header mdl-color--blue-grey-900 mdl-color-text--grey-100">
+            <span class="ob2-drawer-header__title">{{ course_number() }} TA</span>
+            <span class="ob2-drawer-header__subtitle">Logged in as {{ github_username }}</span>
+        </div>
+        <nav class="mdl-navigation">
+            <a class="mdl-navigation__link mdl-color-text--grey-900 ob2-hover--blue-600"
+                href="{{ url_for("ta.assignments") }}">
+                Assignments
+            </a>
+            <a class="mdl-navigation__link mdl-color-text--grey-900 ob2-hover--blue-600"
+                href="{{ url_for("ta.students") }}">
+                All students
+            </a>
+            <a class="mdl-navigation__link mdl-color-text--grey-900 ob2-hover--blue-600"
+                href="{{ url_for("ta.enter_grades") }}">
+                Enter grades
+            </a>
+            <a class="mdl-navigation__link mdl-color-text--grey-900 ob2-hover--blue-600"
+                href="{{ url_for("ta.builds") }}">
+                Latest builds
+            </a>
+            <a class="mdl-navigation__link mdl-color-text--grey-900 ob2-hover--blue-600"
+                href="{{ url_for("ta.gradeslog") }}">
+                Gradeslog
+            </a>
+            <a class="mdl-navigation__link mdl-color-text--grey-900 ob2-hover--blue-600"
+                href="{{ url_for("ta.sql") }}">
+                Data console
+            </a>
+            <a class="mdl-navigation__link mdl-color-text--grey-900 ob2-hover--blue-600"
+                href="{{ url_for("ta.queue_status") }}">
+                Queue status
+            </a>
+            <a class="mdl-navigation__link mdl-color-text--grey-900 ob2-hover--blue-600"
+                href="{{ url_for("ta.export") }}">
+                Export
+            </a>
+            {% call log_out_link() %}
+                <a class="mdl-navigation__link mdl-color-text--grey-900 ob2-hover--blue-600"
+                    href="{{ url_for("onboarding.log_out") }}">
+                    Log out
+                </a>
+            {% endcall %}
+        </nav>
+    </div>
+    <main class="mdl-layout__content mdl-color--grey-100">
+        <div class="ob2-main mdl-grid">
+        {% block content %}
+        {% endblock %}
+        </div>
+    </main>
+</div>
+{% endblock %}

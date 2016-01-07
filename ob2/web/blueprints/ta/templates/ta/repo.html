@@ -1,0 +1,86 @@
+{% from "macros/datatables.html" import cell_build_name, cell_status, cell_commit, cell_message,
+                                        cell_job, cell_build_started, cell_gradeslog_student %}
+{% extends "_ta.html" %}
+{% block content %}
+<div class="mdl-cell mdl-cell--12-col">
+    <h4>Repo Details</h4>
+    <table class="ob2-fullwidth mdl-data-table mdl-js-data-table mdl-shadow--2dp mdl-color--white">
+        <tbody>
+            <tr>
+                <td class="mdl-data-table__cell--non-numeric">Name</td>
+                <td class="mdl-data-table__cell--non-numeric">{{ name }}</td>
+            </tr>
+            <tr>
+                <td class="mdl-data-table__cell--non-numeric">Repo URL</td>
+                <td class="mdl-data-table__cell--non-numeric">
+                    <a href="{{ github_repo_url(name) }}">
+                        {{ github_repo_url(name) }}
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <h4>Students</h4>
+    <table class="ob2-fullwidth mdl-data-table mdl-js-data-table mdl-shadow--2dp
+                  mdl-color--white">
+        <thead>
+            <tr>
+                <th class="mdl-data-table__cell--non-numeric">Name</th>
+                <th class="mdl-data-table__cell--non-numeric">Student ID</th>
+                <th class="mdl-data-table__cell--non-numeric">Login</th>
+                <th class="mdl-data-table__cell--non-numeric">GitHub Username</th>
+                <th class="mdl-data-table__cell--non-numeric">Email
+                    <span id="copyemails" class="icon material-icons ob2-inline-icon js-copy-btn">content_copy</span>
+                    <span class="mdl-tooltip" for="copyemails">Copy All</span>
+                    <textarea class="ob2-offscreen-hide js-copytxt" for="copyemails">{{ students|join(', ', attribute=5) }}</textarea>
+                </th>
+                <th class="mdl-data-table__cell--non-numeric">Database ID</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for id, name, sid, login, github, email, super in students %}
+            <tr>
+                {{ cell_gradeslog_student(name, github, id, super=super) }}
+                <td class="mdl-data-table__cell--non-numeric">{{ sid }}</td>
+                <td class="mdl-data-table__cell--non-numeric">{{ login }}</td>
+                <td class="mdl-data-table__cell--non-numeric">
+                    <a rel="noreferrer" href="{{ github_user_url(github) }}">{{ github }}</a>
+                </td>
+                <td class="mdl-data-table__cell--non-numeric">
+                    <a href="mailto:{{ email }}">{{ email }}</a>
+                </td>
+                <td class="mdl-data-table__cell--non-numeric">{{ id }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <h4>Builds</h4>
+    <table class="ob2-fullwidth mdl-data-table mdl-js-data-table mdl-shadow--2dp
+                  mdl-color--white">
+        <thead>
+            <tr>
+                <th class="mdl-data-table__cell--non-numeric">Build name</th>
+                <th class="mdl-data-table__cell--non-numeric">Status</th>
+                <th class="mdl-data-table__cell--non-numeric">Commit</th>
+                <th class="mdl-data-table__cell--non-numeric">Message</th>
+                <th class="mdl-data-table__cell--non-numeric">Job</th>
+                <th class="mdl-data-table__cell--non-numeric">Started</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for (build_name, source, status, score, commit, message, job, started,
+                full_score) in builds_info %}
+            <tr>
+                {{ cell_build_name(build_name, link_to="ta") }}
+                {{ cell_status(status, score, full_score) }}
+                {{ cell_commit(commit, source) }}
+                {{ cell_message(message) }}
+                {{ cell_job(job, link_to="ta") }}
+                {{ cell_build_started(started) }}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<script src="{{ url_for("static", filename="js/copy_text.js") }}"></script>
+{% endblock %}

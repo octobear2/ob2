@@ -1,0 +1,570 @@
+{% macro cell_mdash_if_none(s) %}
+    <td class="mdl-data-table__cell--non-numeric">
+    {% if s == None %}
+        &mdash;
+    {% else %}
+        {{ s }}
+    {% endif %}
+{% endmacro %}
+
+{% macro cell_build_name(build_name, link_to="dashboard") %}
+    <td class="mdl-data-table__cell--non-numeric">
+    {% if link_to == "dashboard" %}
+        <a href="{{ url_for("dashboard.builds_one", name=build_name) }}">
+    {% elif link_to == "ta" %}
+        <a href="{{ url_for("ta.builds_one", name=build_name) }}">
+    {% endif %}
+            {{ build_name }}
+        </a>
+    </td>
+{% endmacro %}
+
+{% macro row_build_name(build_name) %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Build name</td>
+        <td class="mdl-data-table__cell--non-numeric">{{ build_name }}</td>
+    </tr>
+{% endmacro %}
+
+{% macro cell_status(status, score, full_score) %}
+    <td class="mdl-data-table__cell--non-numeric" style="min-width: 120px;">
+    {% if status == SUCCESS %}
+        {{ score }} / {{ full_score }}
+        {{ status_bar(score, full_score)|safe }}
+    {% else %}
+        <span style="color: {{ status_color(status) }};">
+            {{ build_status_to_string(status) }}
+        </span>
+    {% endif %}
+    </td>
+{% endmacro %}
+
+{% macro row_status(status, score, full_score) %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Status</td>
+        {{ cell_status(status, score, full_score) }}
+    </tr>
+{% endmacro %}
+
+{% macro cell_commit(commit, source, len=8) %}
+    <td class="mdl-data-table__cell--non-numeric">
+    {% if commit != None %}
+        <a href="{{ github_commit_url(source, commit) }}">
+            {{ commit|truncate(len, killwords=True, end='') }}
+        </a>
+    {% else %}
+        &mdash;
+    {% endif %}
+    </td>
+{% endmacro %}
+
+{% macro row_commit(commit, source) %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Commit</td>
+        <td class="mdl-data-table__cell--non-numeric">
+        {% if commit != None %}
+            <a href="{{ github_commit_url(source, commit) }}">{{ commit }}</a>
+        {% else %}
+            &mdash;
+        {% endif %}
+        </td>
+    </tr>
+{% endmacro %}
+
+{% macro cell_message(message) %}
+    <td class="mdl-data-table__cell--non-numeric">
+    {% if message != None %}
+        {{ message|truncate(40, killwords=True) }}
+    {% else %}
+        &mdash;
+    {% endif %}
+    </td>
+{% endmacro %}
+
+{% macro row_message(message) %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Commit message</td>
+        <td class="mdl-data-table__cell--non-numeric">
+        {% if message != None %}
+            {{ message|truncate(80, killwords=True) }}
+        {% else %}
+            &mdash;
+        {% endif %}
+        </td>
+    </tr>
+{% endmacro %}
+
+{% macro cell_source(source, link_to="github") %}
+    <td class="mdl-data-table__cell--non-numeric">
+    {% if source != None %}
+        {% if link_to == "github" %}
+        <a href="{{ github_repo_url(source) }}">
+        {% elif link_to == "ta" %}
+        <a href="{{ url_for("ta.repo", name=source) }}">
+        {% endif %}
+            {{ source }}
+        </a>
+    {% else %}
+        &mdash;
+    {% endif %}
+    </td>
+{% endmacro %}
+
+{% macro row_source(source, link_to="github") %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Source</td>
+        {{ cell_source(source, link_to) }}
+    </tr>
+{% endmacro %}
+
+{% macro cell_job(job, link_to="dashboard") %}
+    <td class="mdl-data-table__cell--non-numeric">
+    {% if link_to == "dashboard" %}
+        <a href="{{ url_for("dashboard.assignments_one", name=job) }}">
+    {% elif link_to == "ta" %}
+        <a href="{{ url_for("ta.assignments_one", name=job) }}">
+    {% endif %}
+            {{ job }}
+        </a>
+    </td>
+{% endmacro %}
+
+{% macro row_job(job, link_to="dashboard") %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Job identifier</td>
+        {{ cell_job(job, link_to=link_to) }}
+    </tr>
+{% endmacro %}
+
+{% macro cell_build_started(started) %}
+    <td class="mdl-data-table__cell--non-numeric">
+        {{ parse_to_relative(started) }}
+    </td>
+{% endmacro %}
+
+{% macro row_build_started(started) %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Build started</td>
+        {{ cell_build_started(started) }}
+    </tr>
+{% endmacro %}
+
+{% macro cell_assignment_name(name, link_to="dashboard") %}
+    {{ cell_job(name, link_to=link_to) }}
+{% endmacro %}
+
+{% macro row_assignment_name(name, link_to="") %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Assignment name</td>
+        <td class="mdl-data-table__cell--non-numeric">
+            {% if link_to == "ta" %}
+            <a href="{{ url_for("ta.assignments_one", name=name) }}">
+            {% endif %}
+            {{ name }}
+            {% if link_to == "ta" %}
+            </a>
+            {% endif %}
+        </td>
+    </tr>
+{% endmacro %}
+
+{% macro cell_grade(score, full_score) %}
+    <td class="mdl-data-table__cell--non-numeric" style="min-width: 120px;">
+    {% if score != None %}
+        {{ score }} / {{ full_score }}
+        {{ status_bar(score, full_score)|safe }}
+    {% else %}
+        &mdash;
+    {% endif %}
+    </td>
+{% endmacro %}
+
+{% macro row_grade(score, full_score, label="Your grade") %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">{{ label }}</td>
+        {{ cell_grade(score, full_score) }}
+    </tr>
+{% endmacro %}
+
+{% macro cell_full_score(full_score) %}
+    <td class="mdl-data-table__cell--non-numeric">
+        {{ full_score }}
+    </td>
+{% endmacro %}
+
+{% macro row_full_score(full_score) %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Full score</td>
+        {{ cell_full_score(full_score) }}
+    </tr>
+{% endmacro %}
+
+{% macro row_assignment_min_score(min_score) %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Minimum allowed score</td>
+        <td class="mdl-data-table__cell--non-numeric">
+            {{ min_score }}
+        </td>
+    </tr>
+{% endmacro %}
+
+{% macro row_assignment_max_score(max_score) %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Maximum allowed score</td>
+        <td class="mdl-data-table__cell--non-numeric">
+            {{ max_score }}
+        </td>
+    </tr>
+{% endmacro %}
+
+{% macro cell_slip(slipunits, display_zero=False) %}
+    <td class="mdl-data-table__cell--non-numeric">
+    {% if slipunits != None and (display_zero or slipunits != 0) %}
+        {{ slipunits }}
+    {% else %}
+        &mdash;
+    {% endif %}
+    </td>
+{% endmacro %}
+
+{% macro row_slip(slipunits, display_zero=False) %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Slip {{ slip_unit_name() }}</td>
+        {{ cell_slip(slipunits, display_zero) }}
+    </tr>
+{% endmacro %}
+
+{% macro cell_weight(weight) %}
+    <td class="mdl-data-table__cell--non-numeric">{{ weight }}</td>
+{% endmacro %}
+
+{% macro row_weight(weight) %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Weight</td>
+        {{ cell_weight(weight) }}
+    </tr>
+{% endmacro %}
+
+{% macro cell_grade_updated(updated) %}
+    <td class="mdl-data-table__cell--non-numeric">
+    {% if updated != None %}
+        {# This should never be in the future, but just to be safe... #}
+        {{ parse_to_relative(updated, 86400, -86400) }}
+    {% else %}
+        &mdash;
+    {% endif %}
+    </td>
+{% endmacro %}
+
+{% macro row_grade_updated(updated, label="Grade last updated") %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">{{ label }}</td>
+        {{ cell_grade_updated(updated) }}
+    </tr>
+{% endmacro %}
+
+{% macro cell_due_date(due_date) %}
+    <td class="mdl-data-table__cell--non-numeric">
+        {{ parse_to_relative(due_date, 0, 0) }}
+    </td>
+{% endmacro %}
+
+{% macro row_due_date(due_date) %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Deadline</td>
+        {{ cell_due_date(due_date) }}
+    </tr>
+{% endmacro %}
+
+{% macro cell_participation(participation) %}
+    <td class="mdl-data-table__cell--non-numeric
+               mdl-color-text--{{ participation_color(participation) }}-900">
+        {{ (participation * 100) | round(2) }}%
+    </td>
+{% endmacro %}
+
+{% macro cell_assignment_status(manual_grading, not_visible_before, cannot_build_after) %}
+{% for color, text in [assignment_status(manual_grading, not_visible_before, cannot_build_after)] %}
+    <td class="mdl-data-table__cell--non-numeric mdl-color-text--{{ color }}-900">
+        {{ text }}
+    </td>
+{% endfor %}
+{% endmacro %}
+
+{% macro row_assignment_status(manual_grading, not_visible_before, cannot_build_after) %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Assignment status</td>
+        {{ cell_assignment_status(manual_grading, not_visible_before, cannot_build_after) }}
+    </tr>
+{% endmacro %}
+
+{% macro cell_auto_build_status(manual_grading, start, end) %}
+{% for color, text in [auto_build_status(manual_grading, start, end)] %}
+    <td class="mdl-data-table__cell--non-numeric mdl-color-text--{{ color }}-900">
+        {{ text }}
+    </td>
+{% endfor %}
+{% endmacro %}
+
+{% macro row_auto_build_status(manual_grading, start, end) %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Autobuild status</td>
+        {{ cell_auto_build_status(manual_grading, start, end) }}
+    </tr>
+{% endmacro %}
+
+{% macro row_is_group(is_group) %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Group assignment</td>
+        <td class="mdl-data-table__cell--non-numeric">
+        {% if is_group %}
+            Yes
+        {% else %}
+            No
+        {% endif %}
+        </td>
+    </tr>
+{% endmacro %}
+
+{% macro row_not_visible_before(not_visible_before) %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Not visible before</td>
+        <td class="mdl-data-table__cell--non-numeric">
+            {{ parse_to_relative(not_visible_before, 0, 0) }}
+        </td>
+    </tr>
+{% endmacro %}
+
+{% macro row_cannot_build_after(cannot_build_after) %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Cannot build after</td>
+        <td class="mdl-data-table__cell--non-numeric">
+            {{ parse_to_relative(cannot_build_after, 0, 0) }}
+        </td>
+    </tr>
+{% endmacro %}
+
+{% macro row_start_auto_building(start_auto_building) %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Start auto building</td>
+        <td class="mdl-data-table__cell--non-numeric">
+            {{ parse_to_relative(start_auto_building, 0, 0) }}
+        </td>
+    </tr>
+{% endmacro %}
+
+{% macro row_end_auto_building(end_auto_building) %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">End auto building</td>
+        <td class="mdl-data-table__cell--non-numeric">
+            {{ parse_to_relative(end_auto_building, 0, 0) }}
+        </td>
+    </tr>
+{% endmacro %}
+
+{% macro row_category(category) %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Category</td>
+        <td class="mdl-data-table__cell--non-numeric">{{ category }}</td>
+    </tr>
+{% endmacro %}
+
+{% macro row_repo(repos, most_recent_repo) %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Repository</td>
+        <td class="mdl-data-table__cell--non-numeric">
+        {% if repos|length == 1 %}
+            <a href="{{ github_repo_url(repos[0]) }}">{{ repos[0] }}</a>
+        {% elif most_recent_repo != None %}
+            <a href="{{ github_repo_url(most_recent_repo) }}">{{ most_recent_repo }}</a>
+        {% else %}
+            &mdash;
+        {% endif %}
+        </td>
+    </tr>
+{% endmacro %}
+
+{% macro cell_rank(rank, count) %}
+<td class="mdl-data-table__cell--non-numeric">{{ rank }} of {{ count }}</td>
+{% endmacro %}
+
+{% macro row_rank(rank, count) %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Rank</td>
+        {{ cell_rank(rank, count) }}
+    </tr>
+{% endmacro %}
+
+{% macro cell_grades_reported(count) %}
+    <td class="mdl-data-table__cell--non-numeric">{{ count }}</td>
+{% endmacro %}
+
+{% macro row_grades_reported(count) %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Grades reported</td>
+        {{ cell_grades_reported(count) }}
+    </tr>
+{% endmacro %}
+
+{% macro cell_average(average) %}
+    <td class="mdl-data-table__cell--non-numeric">
+    {% if average != None %}
+        {{ average|round(2) }}
+    {% else %}
+        &mdash;
+    {% endif %}
+    </td>
+{% endmacro %}
+
+{% macro row_average(average) %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Average</td>
+        {{ cell_average(average) }}
+    </tr>
+{% endmacro %}
+
+{% macro cell_standard_deviation(stddev) %}
+    <td class="mdl-data-table__cell--non-numeric">
+    {% if stddev != None %}
+        {{ stddev|round(2) }}
+    {% else %}
+        &mdash;
+    {% endif %}
+    </td>
+{% endmacro %}
+
+{% macro row_standard_deviation(stddev) %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Standard deviation</td>
+        {{ cell_standard_deviation(stddev) }}
+    </tr>
+{% endmacro %}
+
+{% macro cell_gradeslog_name(name) %}
+    <td class="mdl-data-table__cell--non-numeric">
+        <a href="{{ url_for("ta.gradeslog_one",
+                            name=name) }}">
+            {{ name }}
+        </a>
+    </td>
+{% endmacro %}
+
+{% macro row_gradeslog_name(name) %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Transaction name</td>
+        <td class="mdl-data-table__cell--non-numeric">{{ name }}</td>
+    </tr>
+{% endmacro %}
+
+{% macro cell_gradeslog_source(source) %}
+    <td class="mdl-data-table__cell--non-numeric">{{ source }}</td>
+{% endmacro %}
+
+{% macro row_gradeslog_source(source) %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Source</td>
+        {{ cell_gradeslog_source(source) }}
+    </tr>
+{% endmacro %}
+
+{% macro cell_gradeslog_student(name, github, user_id, super=False) %}
+    <td class="mdl-data-table__cell--non-numeric">
+        {% if github %}
+        <a href="{{ url_for("ta.students_one", identifier=github, type_="github") }}">
+        {% else %}
+        <a href="{{ url_for("ta.students_one", identifier=user_id, type_="user_id") }}">
+        {% endif %}
+            {{- name -}}
+        </a>
+        {%- if super %} (Staff){% endif %}
+    </td>
+{% endmacro %}
+
+{% macro row_gradeslog_student(name, github, user_id, super=False) %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Student</td>
+        {{ cell_gradeslog_student(name, github, user_id, super) }}
+    </tr>
+{% endmacro %}
+
+{% macro cell_gradeslog_timestamp(updated) %}
+    {{ cell_grade_updated(updated) }}
+{% endmacro %}
+
+{% macro cell_gradeslog_description(description) %}
+    <td class="mdl-data-table__cell--non-numeric">
+    {% if description != None %}
+        {{ description|truncate(40, killwords=True) }}
+    {% else %}
+        &mdash;
+    {% endif %}
+    </td>
+{% endmacro %}
+
+{% macro row_build_log(log) %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric ob2-no-hover ob2-multiline-row"
+            colspan="2">
+            {% if log != None %}
+            <pre class="ob2-build-log js-color-me">{{ ansi_to_html(log)|safe }}</pre>
+            {% else %}
+            <div class="mdl-color-text--grey-600" style="padding: 14px 0;">
+                The log output of the build will appear here when the build is complete.
+            </div>
+            {% endif %}
+        </td>
+    </tr>
+{% endmacro %}
+
+{% macro cell_worker_identifier(identifier, link_to=None) %}
+    <td class="mdl-data-table__cell--non-numeric">
+        {% if link_to == "ta" %}
+        <a href="{{ url_for("ta.queue_status_worker", identifier=identifier) }}">
+        {% endif %}
+            Worker {{ identifier }}
+        {% if link_to != None %}
+        </a>
+        {% endif %}
+    </td>
+{% endmacro %}
+
+{% macro row_worker_identifier(identifier, link_to=None) %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Name</td>
+        {{ cell_worker_identifier(identifier, link_to) }}
+    </tr>
+{% endmacro %}
+
+{% macro cell_worker_status(status) %}
+    <td class="mdl-data-table__cell--non-numeric">
+    {% if status != None %}
+        <a href="{{ url_for("ta.builds_one", name=status) }}">{{ status }}</a>
+    {% else %}
+        Idle
+    {% endif %}
+    </td>
+{% endmacro %}
+
+{% macro row_worker_status(status) %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Status</td>
+        {{ cell_worker_status(status) }}
+    </tr>
+{% endmacro %}
+
+{% macro cell_worker_updated(updated, status) %}
+    <td class="mdl-data-table__cell--non-numeric">
+    {% if status != None %}
+        {{ parse_to_relative(updated, 86400, -86400) }}
+    {% else %}
+        &mdash;
+    {% endif %}
+    </td>
+{% endmacro %}
+
+{% macro row_worker_updated(updated, status) %}
+    <tr>
+        <td class="mdl-data-table__cell--non-numeric">Job Started</td>
+        {{ cell_worker_updated(updated, status) }}
+    </tr>
+{% endmacro %}

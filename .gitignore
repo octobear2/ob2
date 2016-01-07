@@ -1,0 +1,9 @@
+*.sqlite3
+.vagrant
+
+.DS_Store
+*.swp
+*.pyc
+
+/apsw-*/
+/apsw.zip

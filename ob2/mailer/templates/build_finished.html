@@ -1,0 +1,27 @@
+{% if message %}
+<h3 style="white-space: pre-wrap; word-wrap: break-word;">{{ message }}</h3>
+{% endif %}
+<p>
+    {% if source and commit %}
+    <a href="{{ github_commit_url(source, commit) }}">View on GitHub: {{ commit }}</a>
+    <br />
+    {% endif %}
+    <a href="{{ url_for("dashboard.builds_one", name=build_name, _external=True) }}">
+        {{- "View" }} {{ build_name -}}
+    </a>
+    <br />
+    <a href="{{ url_for("dashboard.assignments_one", name=job_name, _external=True) }}">
+        {{- "View" }} {{ job_name -}}
+    </a>
+</p>
+<h3>Build finished: {{ build_name }}</h3>
+<p>Your score: {{ score }} / {{ full_score }}</p>
+{% if not affected %}
+<p>(This did not impact your grade, because your current grade is higher.)</p>
+{% elif slipunits != 0 %}
+<p style="color: #AA4400;">{{ slipunits }} slip {{ slip_unit_name(slipunits) }} used</p>
+{% endif %}
+{% if log %}
+<h3>Build log</h3>
+<p style="white-space: pre-wrap; word-wrap: break-word;">{{ ansi_to_html(log)|safe }}</pre>
+{% endif %}

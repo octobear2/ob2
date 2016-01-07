@@ -1,0 +1,17 @@
+{% if message %}
+{{ message }}
+{% endif %}
+
+{% if source and commit %}
+View on GitHub: {{ github_commit_url(source, commit) }}
+{% endif %}
+View {{ build_name }}: {{ url_for("dashboard.builds_one", name=build_name, _external=True) }}
+View {{ job_name }}: {{ url_for("dashboard.assignments_one", name=job_name, _external=True) }}
+
+Build finished: {{ build_name }}
+Your score: {{ score }} / {{ full_score }}
+{% if not affected %}
+(This did not impact your grade, because your current grade is higher.)
+{% elif slipunits != 0 %}
+{{ slipunits }} slip {{ slip_unit_name(slipunits) }} used
+{% endif %}

@@ -1,0 +1,160 @@
+{% from "macros/datatables.html" import row_assignment_name, row_grade, row_slip, row_weight,
+                                        row_grade_updated, row_due_date, row_category, row_repo,
+                                        row_rank, row_average, row_standard_deviation,
+                                        cell_build_name, cell_status, cell_source, cell_commit,
+                                        cell_message, cell_build_started %}
+{% extends "_dashboard.html" %}
+{% block content %}
+<script type="text/javascript" src="{{ url_for("static", filename="js/graphing.js") }}"></script>
+{% for (name, full_score, weight, due_date, category, is_group, manual_grading, score, slipunits,
+        updated, rank, count, average, stddev) in [assignment_info] %}
+<div class="mdl-cell mdl-cell--6-col">
+    <h4>Assignment Details</h4>
+    <table class="ob2-fullwidth mdl-data-table mdl-js-data-table mdl-shadow--2dp
+                  mdl-color--white">
+        <tbody>
+            {{ row_assignment_name(name) }}
+            {{ row_grade(score, full_score) }}
+            {{ row_slip(slipunits) }}
+            {{ row_weight(weight) }}
+            {{ row_grade_updated(updated) }}
+            {{ row_due_date(due_date) }}
+            {{ row_category(category) }}
+            {% if not manual_grading %}
+            {{ row_repo(repos, most_recent_repo) }}
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+<div class="mdl-cell mdl-cell--6-col">
+    <h4 style="visibility: hidden;">Statistics</h4>
+    <table class="ob2-fullwidth mdl-data-table mdl-js-data-table mdl-shadow--2dp
+                  mdl-color--white">
+        <tbody>
+        {% if rank %}
+            {{ row_rank(rank, count) }}
+        {% endif %}
+            {{ row_average(average) }}
+            {{ row_standard_deviation(stddev) }}
+        {% if count %}
+            <tr>
+                <td class="mdl-data-table__cell--non-numeric ob2-no-hover" colspan="2">
+                    <svg class="ob2-graph js-ob2-graph" style="width: 100%;"
+                         data-endpoint="{{ url_for("dashboard.assignments_one_grades_json",
+                                                   name=name,
+                                                   _csrf_token=generate_csrf_token()) }}"
+                         data-type="histogram" data-aspectratio="2.5"></div>
+                </td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+</div>
+{% if manual_grading %}
+<div class="mdl-cell mdl-cell--12-col">
+    <h4>Grading</h4>
+    <p class="mdl-color-text--grey-600">
+        This assignment cannot be graded automatically. Your grade will be assigned by the course
+        staff manually.
+    </p>
+</div>
+{% else %}
+<div class="mdl-cell mdl-cell--12-col">
+    <h4>Actions</h4>
+    {% if not can_build %}
+        <p class="mdl-color-text--grey-600">
+            Additional submissions have been disabled for this assignment.
+        </p>
+    {% elif repos %}
+        {% if slipunits_now == 0 %}
+        <p class="mdl-color-text--grey-600">
+            Pushing your code to GitHub will trigger the autograder automatically, but you can also
+            manually run the autograder here.
+        </p>
+        {% else %}
+        <p class="mdl-color-text--red-600">
+            This assignment is {{ slipunits_now }} {{ slip_unit_name(slipunits_now) }} late. If you
+            run the autograder now, you will be using slip {{ slip_unit_name() }}.
+        </p>
+        {% endif %}
+        <form action="{{ url_for("dashboard.build_now") }}" method="post">
+            <input type="hidden" name="_csrf_token" value="{{ generate_csrf_token() }}" />
+            <input type="hidden" name="f_job_name" value="{{ name }}" />
+            {% if repos|length > 1 %}
+            <p class="mdl-color-text--grey-600" style="margin-left: 22px; margin-bottom: 26px;">
+            {% for repo in repos %}
+                <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect"
+                       style="display: inline;"
+                       for="f_repo--{{ loop.index }}">
+                   <input type="radio" id="f_repo--{{ loop.index }}"
+                          class="mdl-radio__button" name="f_repo" value="{{ repo }}"
+                          {%- if most_recent_repo == repo %} checked="checked" {% endif -%}
+                          />
+                   <span class="mdl-radio__label">{{ repo }}</span>
+                </label>
+                {% if not loop.last %}
+                <br />
+                {% endif %}
+            {% endfor %}
+            </p>
+            {% else %}
+            <input type="hidden" name="f_repo" value="{{ repos[0] }}" />
+            {% endif %}
+            <p>
+                <button type="submit" class="mdl-button mdl-js-button mdl-js-ripple-effect
+                                             mdl-color--primary">
+                    Run autograder
+                </button>
+            </p>
+        </form>
+    {% else %}
+        <p class="mdl-color-text--grey-600">
+            You do not have any group repositories linked to your account.
+            <a href="{{ url_for("dashboard.group") }}">Join a group</a> and try again.
+        </p>
+    {% endif %}
+    <h4>Builds</h4>
+    <table class="ob2-fullwidth mdl-data-table mdl-js-data-table mdl-shadow--2dp
+                  mdl-color--white">
+        <thead>
+            <tr>
+                <th class="mdl-data-table__cell--non-numeric">Build name</th>
+                <th class="mdl-data-table__cell--non-numeric">Status</th>
+                <th class="mdl-data-table__cell--non-numeric">Source</th>
+                <th class="mdl-data-table__cell--non-numeric">Commit</th>
+                <th class="mdl-data-table__cell--non-numeric">Message</th>
+                <th class="mdl-data-table__cell--non-numeric">Started</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for build_name, source, status, score, commit, message, started in builds %}
+            <tr>
+                {{ cell_build_name(build_name) }}
+                {{ cell_status(status, score, full_score) }}
+                {{ cell_source(source) }}
+                {{ cell_commit(commit, source) }}
+                {{ cell_message(message) }}
+                {{ cell_build_started(started) }}
+            </tr>
+            {% else %}
+            <tr>
+                <td class="mdl-data-table__cell--non-numeric mdl-color-text--grey-600" colspan="6">
+                    <h5>There's nothing here yet!</h5>
+                    <p style="margin-bottom: 28px;">
+                    {% if is_group %}
+                        You have no builds yet. Push code to your group GitHub repository to trigger
+                        a build.
+                    {% else %}
+                        You have no builds yet. Push code to your personal GitHub repository to
+                        trigger a build.
+                    {% endif %}
+                    </p>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endfor %}
+{% endblock %}

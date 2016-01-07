@@ -1,0 +1,86 @@
+{% from "macros/pagination.html" import pagination %}
+{% extends "_ta.html" %}
+{% block content %}
+<div class="mdl-cell mdl-cell--12-col">
+    <h4>Builds</h4>
+    {% if page > 1 %}
+    {{ pagination(page, "ta.builds", more_pages) }}
+</div>
+<div class="mdl-cell mdl-cell--12-col">
+    {% endif %}
+    <table class="ob2-fullwidth mdl-data-table mdl-js-data-table mdl-shadow--2dp
+                  mdl-color--white">
+        <thead>
+            <tr>
+                <th class="mdl-data-table__cell--non-numeric">Build name</th>
+                <th class="mdl-data-table__cell--non-numeric">Status</th>
+                <th class="mdl-data-table__cell--non-numeric">Source</th>
+                <th class="mdl-data-table__cell--non-numeric">Commit</th>
+                <th class="mdl-data-table__cell--non-numeric">Message</th>
+                <th class="mdl-data-table__cell--non-numeric">Job</th>
+                <th class="mdl-data-table__cell--non-numeric">Started</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for (build_name, source, status, score, commit, message, job, started,
+                full_score) in builds_info %}
+            <tr>
+                <td class="mdl-data-table__cell--non-numeric">
+                    <a href="{{ url_for("ta.builds_one", name=build_name) }}">
+                        {{ build_name }}
+                    </a>
+                </td>
+                <td class="mdl-data-table__cell--non-numeric" style="min-width: 120px;">
+                {% if status == SUCCESS %}
+                    {{ score }} / {{ full_score }}
+                    {{ status_bar(score, full_score)|safe }}
+                {% else %}
+                    <span style="color: {{ status_color(status) }};">
+                        {{ build_status_to_string(status) }}
+                    </span>
+                {% endif %}
+                </td>
+                <td class="mdl-data-table__cell--non-numeric">
+                {% if source != None %}
+                    <a href="{{ url_for("ta.repo", name=source) }}">
+                        {{ source }}
+                    </a>
+                {% else %}
+                    &mdash;
+                {% endif %}
+                </td>
+                <td class="mdl-data-table__cell--non-numeric">
+                {% if commit != None %}
+                    <a href="{{ github_commit_url(source, commit) }}">
+                        {{ commit|truncate(8, killwords=True, end='') }}
+                    </a>
+                {% else %}
+                    &mdash;
+                {% endif %}
+                </td>
+                <td class="mdl-data-table__cell--non-numeric">
+                {% if message != None %}
+                    {{ message|truncate(40, killwords=True) }}
+                {% else %}
+                    &mdash;
+                {% endif %}
+                </td>
+                <td class="mdl-data-table__cell--non-numeric">
+                    <a href="{{ url_for("ta.assignments_one", name=job) }}">
+                        {{ job }}
+                    </a>
+                </td>
+                <td class="mdl-data-table__cell--non-numeric">
+                    {{ parse_to_relative(started) }}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% if page != 1 or more_pages %}
+<div class="mdl-cell mdl-cell--12-col">
+    {{ pagination(page, "ta.builds", more_pages) }}
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,82 @@
+{% from "macros/datatables.html" import cell_mdash_if_none, cell_grade_updated %}
+{% extends "_ta.html" %}
+{% block content %}
+<div class="mdl-cell mdl-cell--12-col">
+    <h4>Enter grades</h4>
+    <p>
+        Here is a preview of the grades you are about to commit. Please review them for error before
+        submitting.
+    </p>
+    <table class="ob2-fullwidth mdl-data-table mdl-js-data-table mdl-shadow--2dp
+                  mdl-color--white" style="margin-bottom: 22px;">
+        <thead>
+            <tr>
+                <th class="mdl-data-table__cell--non-numeric">Name</th>
+                <th class="mdl-data-table__cell--non-numeric">Student ID</th>
+                <th class="mdl-data-table__cell--non-numeric">Login</th>
+                <th class="mdl-data-table__cell--non-numeric">GitHub Username</th>
+                <th class="mdl-data-table__cell--non-numeric">Current grade<sup>1</sup></th>
+                <th class="mdl-data-table__cell--non-numeric">Updated grade</th>
+                <th class="mdl-data-table__cell--non-numeric">
+                    Current slip {{ slip_unit_name() }}<sup>1</sup>
+                </th>
+                <th class="mdl-data-table__cell--non-numeric">
+                    Updated slip {{ slip_unit_name() }}
+                </th>
+                <th class="mdl-data-table__cell--non-numeric">Last updated<sup>1</sup></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for user_id, new_score, new_slipunits, name, sid, login, github, old_score,
+               old_slipunits, updated in entries_details %}
+            <tr>
+                {{ cell_mdash_if_none(name) }}
+                {{ cell_mdash_if_none(sid) }}
+                {{ cell_mdash_if_none(login) }}
+                {{ cell_mdash_if_none(github) }}
+                <td class="mdl-data-table__cell--non-numeric">
+                {% if old_score == None %}
+                    &mdash;
+                {% else %}
+                    {{ old_score }} / {{ full_score }}
+                {% endif %}
+                </td>
+                <td class="mdl-data-table__cell--non-numeric">
+                {% if new_score == None %}
+                    (No change)
+                {% else %}
+                    {{ new_score }} / {{ full_score }}
+                {% endif %}
+                </td>
+                {{ cell_mdash_if_none(old_slipunits) }}
+                <td class="mdl-data-table__cell--non-numeric">
+                {% if new_slipunits == None %}
+                    (No change)
+                {% else %}
+                    {{ new_slipunits }}
+                {% endif %}
+                </td>
+                {{ cell_grade_updated(updated) }}
+        {% endfor %}
+        </tbody>
+    </table>
+    <p class="mdl-color-text--grey-600 mdl-typography--caption">
+        <sup>1</sup>These columns reflect current values. They are for informational purposes only,
+        and may have changed since the page loaded.
+    </p>
+    <form action="{{ url_for("ta.enter_grades_confirm") }}" method="post" autocomplete="off">
+        <input type="hidden" name="_csrf_token" value="{{ generate_csrf_token() }}" />
+        <input type="hidden" name="f_step" value="2" />
+        <input type="hidden" name="f_assignment" value="{{ assignment_name }}" />
+        <input type="hidden" name="f_description" value="{{ description }}" />
+        <textarea style="display: none;" name="f_csv">{{ entries_csv }}</textarea>
+        <p>
+            <button id="f_continue" type="submit" class="mdl-button mdl-js-button
+                                                         mdl-js-ripple-effect mdl-color--blue
+                                                         mdl-color-text--grey-100">
+                Submit grades
+            </button>
+        </p>
+    </form>
+</div>
+{% endblock %}

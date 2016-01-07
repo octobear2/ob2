@@ -1,0 +1,14 @@
+<p>
+    {{ inviter_name }} (<a href="{{ github_user_url(inviter_github) }}">{{ inviter_github }}</a>)
+    wants to create a group with:
+</p>
+<ul>
+{%- for _, name, _, _, github, _ in invitees %}
+    <li>{{ name }} (<a href="{{ github_user_url(github) }}">{{ github }}</a>)</li>
+{%- endfor %}
+</ul>
+<p>
+    You can accept or reject this invitation on the
+    <a href="{{ url_for("dashboard.group", _external=True) }}">group page</a>.
+    All invited members must accept an invitation before the group can be created.
+</p>

@@ -1,0 +1,23 @@
+{% from "macros/datatables.html" import row_build_name, row_status, row_commit, row_message,
+                                        row_source, row_job, row_build_started, row_build_log %}
+{% extends "_dashboard.html" %}
+{% block content %}
+{% for (build_name, status, score, source, commit, message, job, started, log, full_score)
+   in [build_info] %}
+<div class="mdl-cell mdl-cell--12-col">
+    <h4>Build Details</h4>
+    <table class="ob2-fullwidth mdl-data-table mdl-js-data-table mdl-shadow--2dp mdl-color--white">
+        <tbody>
+            {{ row_build_name(build_name) }}
+            {{ row_status(status, score, full_score) }}
+            {{ row_commit(commit, source) }}
+            {{ row_message(message) }}
+            {{ row_source(source) }}
+            {{ row_job(job) }}
+            {{ row_build_started(started) }}
+            {{ row_build_log(log) }}
+        </tbody>
+    </table>
+</div>
+{% endfor %}
+{% endblock %}

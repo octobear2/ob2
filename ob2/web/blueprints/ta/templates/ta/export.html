@@ -1,0 +1,42 @@
+{% extends "_ta.html" %}
+{% block content %}
+<div class="mdl-cell mdl-cell--12-col">
+    <h4>Export</h4>
+    <ul>
+        <li>
+            <a href="{{ url_for("ta.export_one", name="student_roster_with_grades") }}">
+                {{- "Student roster with grades" -}}
+            </a>
+            <br />
+            The name, SID, login, GitHub username, email, and database ID of each student, as well
+            as columns for the score and number of slip {{ slip_unit_name() }} used for each
+            assignment. Rows may have empty fields when a student has not attempted an assignment or
+            has missing profile information.
+        </li>
+        {% if groups_enabled %}
+        <li>
+            <a href="{{ url_for("ta.export_one", name="group_names_and_emails") }}">
+                {{- "Group names and email addresses" -}}
+            </a>
+            <br />
+            A list of groups, along with information about their members. The pipe character is
+            used as the delimiter between different group members within a field (to seperate names
+            and email addresses), because commas occasionally appear in full names.
+        </li>
+        {% endif %}
+        <li>
+            <a href="{{ url_for("ta.export_one", name="repo_best_builds") }}">
+                {{- "Repos&rsquo; best builds"|safe -}}
+            </a>
+            <br />
+            The build name, repo name, commit, message, job, status, and score of the best builds
+            for each (repo, job) combination. This dataset may be useful for generating inputs for
+            plagiarism detection software, such as MOSS.
+        </li>
+    </ul>
+    <p>
+        If you need anything more serious than this, your best bet is to grab the database directly
+        from this server and run your queries on that.
+    </p>
+</div>
+{% endblock %}

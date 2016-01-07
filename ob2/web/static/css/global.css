@@ -1,0 +1,194 @@
+.ob2-main {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1440px;
+}
+
+.ob2-main-thin {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 800px;
+}
+
+.ob2-main-thin-thin {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 560px;
+}
+
+.ob2-content {
+  padding: 32px;
+}
+
+.ob2-fullwidth {
+  width: 100%;
+}
+
+.ob2-drawer-header {
+  padding: 25px;
+}
+
+.ob2-drawer-header__title {
+  display: block;
+  font-size: 20px;
+}
+
+.ob2-drawer-header__subtitle {
+  display: block;
+  font-size: 14px;
+}
+
+.ob2-no-min-height {
+  min-height: 0px;
+}
+
+.ob2-float {
+  float: left;
+}
+
+.mdl-layout__content {
+  overflow-x: auto;
+}
+
+.mdl-layout__drawer {
+  border-right: none;
+}
+
+.ob2-hover--blue-600:hover {
+  background-color: rgb(30,136,229) !important;
+}
+
+.ob2-hover--amber-600:hover {
+  background-color: rgb(255,179,0) !important;
+}
+
+.ob2-build-log {
+  font-size: 14px;
+  line-height: 1.25;
+  font-family: "Ubuntu Mono", monospace;
+  margin: 0;
+  padding: 14px 0;
+}
+
+.ob2-code-input {
+  font-size: 16px;
+  line-height: 1.25;
+  font-family: "Ubuntu Mono", monospace;
+}
+
+.ob2-no-hover {
+  background: white !important;
+}
+
+.ob2-multiline-row {
+  padding-bottom: 12px !important;
+}
+
+pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.ob2-pagination {
+  text-decoration: none;
+}
+
+.ob2-inline-icon {
+  cursor: default;
+  font-size: 1.25em;
+  vertical-align: middle;
+}
+
+.ob2-dt {
+  color: rgb(117, 117, 117);
+  height: 0;
+  font-size: 87.5%;
+  font-style: italic;
+  font-weight: normal;
+  overflow: visible;
+}
+
+.ob2-dd {
+  margin-left: 91px;
+}
+
+.ob2-graph {
+  margin-bottom: 12px;
+  overflow: visible;
+}
+
+.ob2-graph--bar {
+  fill: rgba(0, 0, 0, 0.870588);
+  shape-rendering: crispEdges;
+}
+
+.ob2-graph--bar-axis {
+  fill: none;
+  stroke: rgb(194, 194, 194);
+  shape-rendering: crispEdges;
+}
+
+.ob2-graph--bar-axis text {
+  fill: rgba(0, 0, 0, 0.870588);
+  stroke: none;
+}
+
+.ob2-graph--smooth-line {
+  fill: none;
+  stroke: rgba(0, 0, 0, 0.10);
+  stroke-width: 1.5px;
+}
+
+.ob2-graph--smooth-x-axis {
+  fill: none;
+  stroke: rgb(194, 194, 194);
+  shape-rendering: crispEdges;
+}
+
+.ob2-graph--smooth-x-axis text {
+  fill: rgba(0, 0, 0, 0.870588);
+  stroke: none;
+}
+
+.ob2-graph--smooth-x-axis .domain {
+  stroke: none !important;
+}
+
+.ob2-graph--smooth-y-axis {
+  fill: none;
+  stroke: rgb(194, 194, 194);
+  shape-rendering: crispEdges;
+}
+
+.ob2-graph--smooth-y-axis text {
+  fill: rgba(0, 0, 0, 0.870588);
+  stroke: none;
+}
+
+.ob2-offscreen-hide {
+  position: absolute;
+  left: -10000px;
+  top: -10000px;
+  opacity: 0;
+}
+
+.ob2-fileinput input {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+
+.ob2-photo {
+  max-width: 128px;
+  max-height: 128px;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.4);
+}
+
+.ob2-footer {
+  margin-bottom: 1.5em;
+  font-size: 0.875em;
+  text-align: center;
+}

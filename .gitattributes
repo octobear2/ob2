@@ -1,0 +1,4 @@
+puppet/modules/apt/** -diff
+puppet/modules/apt/** linguist-vendored
+puppet/modules/stdlib/** -diff
+puppet/modules/stdlib/** linguist-vendored

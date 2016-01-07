@@ -1,0 +1,159 @@
+{% from "macros/datatables.html" import row_assignment_name, row_weight, row_due_date, row_category,
+                                        row_not_visible_before, row_cannot_build_after,
+                                        row_is_group, row_full_score, row_assignment_min_score,
+                                        row_assignment_max_score, row_start_auto_building,
+                                        row_end_auto_building, row_assignment_status,
+                                        row_auto_build_status, row_grades_reported, row_average,
+                                        row_standard_deviation, cell_gradeslog_student, cell_grade,
+                                        cell_slip, cell_grade_updated, cell_build_name, cell_status,
+                                        cell_source, cell_commit, cell_message, cell_build_started
+                                        %}
+{% from "macros/pagination.html" import pagination %}
+{% extends "_ta.html" %}
+{% block content %}
+<script type="text/javascript" src="{{ url_for("static", filename="js/graphing.js") }}"></script>
+<script type="text/javascript"
+        src="{{ url_for("static", filename="js/click_to_expand.js") }}"></script>
+{% for (name, full_score, min_score, max_score, weight, due_date, category, is_group,
+        manual_grading, not_visible_before, cannot_build_after, start_auto_building,
+        end_auto_building, count, average, stddev) in [assignment_info] %}
+{% if page == 1 %}
+<div class="mdl-cell mdl-cell--6-col">
+    <h4>Assignment Details</h4>
+    <table class="ob2-fullwidth mdl-data-table mdl-js-data-table mdl-shadow--2dp
+                  mdl-color--white">
+        <tbody>
+            {{ row_assignment_name(name) }}
+            {{ row_weight(weight) }}
+            {{ row_full_score(full_score) }}
+            {{ row_assignment_min_score(min_score) }}
+            {{ row_assignment_max_score(max_score) }}
+            {{ row_due_date(due_date) }}
+            {{ row_category(category) }}
+        {% if groups_enabled %}
+            {{ row_is_group(is_group) }}
+        {% endif %}
+            {{ row_not_visible_before(not_visible_before) }}
+        {% if not manual_grading %}
+            {{ row_cannot_build_after(cannot_build_after) }}
+            {{ row_assignment_status(manual_grading, not_visible_before, cannot_build_after) }}
+            {{ row_start_auto_building(start_auto_building) }}
+            {{ row_end_auto_building(end_auto_building) }}
+            {{ row_auto_build_status(manual_grading, start_auto_building, end_auto_building) }}
+        {% endif %}
+        </tbody>
+    </table>
+</div>
+<div class="mdl-cell mdl-cell--6-col">
+    <h4 style="visibility: hidden;">Statistics</h4>
+    <table class="ob2-fullwidth mdl-data-table mdl-js-data-table mdl-shadow--2dp
+                  mdl-color--white">
+        <tbody>
+            {{ row_grades_reported(count) }}
+            {{ row_average(average) }}
+            {{ row_standard_deviation(stddev) }}
+            {% if count %}
+            <tr>
+                <td class="mdl-data-table__cell--non-numeric ob2-no-hover" colspan="2">
+                    <svg class="ob2-graph js-ob2-graph" style="width: 100%;"
+                         data-endpoint="{{ url_for("ta.assignments_one_grade_distribution",
+                                                   name=name, _csrf_token=generate_csrf_token()) }}"
+                         data-type="histogram" data-aspectratio="2.5"></div>
+                </td>
+            </tr>
+            {% endif %}
+            {% if builds %}
+            <tr>
+                <td class="mdl-data-table__cell--non-numeric ob2-no-hover" colspan="2">
+                    <svg class="ob2-graph js-ob2-graph" style="width: 100%;"
+                         data-endpoint="
+                         {{- url_for("ta.assignments_one_timeseries_grade_percentiles", name=name,
+                                     _csrf_token=generate_csrf_token()) }}"
+                         data-type="smooth" data-aspectratio="2.5"></div>
+                </td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+<div class="mdl-cell mdl-cell--12-col">
+    <h4>Grades for {{ name }}</h4>
+    <table class="ob2-fullwidth mdl-data-table mdl-js-data-table mdl-shadow--2dp
+                  mdl-color--white {% if not manual_grading %}js-click-to-expand{% endif %}">
+        <thead>
+            <tr>
+                <th class="mdl-data-table__cell--non-numeric">Name</th>
+                <th class="mdl-data-table__cell--non-numeric">SID</th>
+                <th class="mdl-data-table__cell--non-numeric">GitHub</th>
+                <th class="mdl-data-table__cell--non-numeric">Email</th>
+                <th class="mdl-data-table__cell--non-numeric">Grade</th>
+                <th class="mdl-data-table__cell--non-numeric">Slip {{ slip_unit_name() }}</th>
+                <th class="mdl-data-table__cell--non-numeric">Updated</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for user_id, name, sid, github, email, super, score, slipunits, updated in grades %}
+            <tr>
+                {{ cell_gradeslog_student(name, github, user_id, super) }}
+                <td class="mdl-data-table__cell--non-numeric">{{ sid }}</td>
+                <td class="mdl-data-table__cell--non-numeric">
+                {% if github %}
+                    <a rel="noreferrer" href="{{ github_user_url(github) }}">{{ github }}</a>
+                {% else %}
+                    &mdash;
+                {% endif %}
+                </td>
+                <td class="mdl-data-table__cell--non-numeric">
+                    <a href="mailto:{{ email }}">{{ email }}</a>
+                </td>
+                {{ cell_grade(score, full_score) }}
+                {{ cell_slip(slipunits) }}
+                {{ cell_grade_updated(updated) }}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% if not manual_grading %}
+<div class="mdl-cell mdl-cell--12-col">
+    <h4>Builds for {{ name }}</h4>
+    {% if page > 1 %}
+    {{ pagination(page, "ta.assignments_one", more_pages, kwargs={"name": name}) }}
+</div>
+<div class="mdl-cell mdl-cell--12-col">
+    {% endif %}
+    <table class="ob2-fullwidth mdl-data-table mdl-js-data-table mdl-shadow--2dp
+                  mdl-color--white">
+        <thead>
+            <tr>
+                <th class="mdl-data-table__cell--non-numeric">Build name</th>
+                <th class="mdl-data-table__cell--non-numeric">Status</th>
+                <th class="mdl-data-table__cell--non-numeric">Source</th>
+                <th class="mdl-data-table__cell--non-numeric">Commit</th>
+                <th class="mdl-data-table__cell--non-numeric">Message</th>
+                <th class="mdl-data-table__cell--non-numeric">Started</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for (build_name, source, status, score, commit, message, started) in builds %}
+            <tr>
+                {{ cell_build_name(build_name, link_to="ta") }}
+                {{ cell_status(status, score, full_score) }}
+                {{ cell_source(source, link_to="ta") }}
+                {{ cell_commit(commit, source) }}
+                {{ cell_message(message) }}
+                {{ cell_build_started(started) }}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% if page != 1 or more_pages %}
+<div class="mdl-cell mdl-cell--12-col">
+    {{ pagination(page, "ta.assignments_one", more_pages, kwargs={"name": name}) }}
+</div>
+{% endif %}
+{% endif %}
+{% endfor %}
+{% endblock %}

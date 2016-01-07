@@ -1,0 +1,8 @@
+{{ inviter_name }} ({{ github_user_url(inviter_github) }}) wants to create a group with:
+
+{% for _, name, _, _, github, _ in invitees -%}
+{{ name }} ({{ github_user_url(github) }})
+{% endfor %}
+You can accept or reject this invitation on the group page:
+{{ url_for("dashboard.group", _external=True) }}
+All invited members must accept an invitation before the group can be created.

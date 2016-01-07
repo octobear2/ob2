@@ -1,0 +1,50 @@
+{% from "macros/datatables.html" import cell_assignment_name, cell_full_score,
+                                        cell_participation, cell_weight, cell_grade_updated,
+                                        cell_due_date, cell_assignment_status,
+                                        cell_auto_build_status %}
+{% extends "_ta.html" %}
+{% block content %}
+<div class="mdl-cell mdl-cell--12-col">
+    <h4>Assignments</h4>
+    <table class="ob2-fullwidth mdl-data-table mdl-js-data-table mdl-shadow--2dp
+                  mdl-color--white">
+        <thead>
+            <tr>
+                <th class="mdl-data-table__cell--non-numeric">Name</th>
+                <th class="mdl-data-table__cell--non-numeric">
+                    <span style="vertical-align: middle;">
+                        Participation
+                    </span>
+                    <i id="ob2-tooltips--participation-header"
+                       class="material-icons ob2-inline-icon">info_outline</i>
+                    <div class="mdl-tooltip" for="ob2-tooltips--participation-header">
+                        The percentage of students who have<br />
+                        attempted this assignment, compared<br />
+                        to how many students have attempted<br />
+                        any assignment.
+                    </div>
+                </th>
+                <th class="mdl-data-table__cell--non-numeric">Full score</th>
+                <th class="mdl-data-table__cell--non-numeric">Weight</th>
+                <th class="mdl-data-table__cell--non-numeric">Deadline</th>
+                <th class="mdl-data-table__cell--non-numeric">Status</th>
+                <th class="mdl-data-table__cell--non-numeric">Autobuild</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for name, full_score, weight, manual_grading, not_visible_before, start_auto_building,
+               end_auto_building, due_date, cannot_build_after, participation in assignments_info %}
+            <tr>
+                {{ cell_assignment_name(name, link_to="ta") }}
+                {{ cell_participation(participation) }}
+                {{ cell_full_score(full_score) }}
+                {{ cell_weight(weight) }}
+                {{ cell_due_date(due_date) }}
+                {{ cell_assignment_status(manual_grading, not_visible_before, cannot_build_after) }}
+                {{ cell_auto_build_status(manual_grading, start_auto_building, end_auto_building) }}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

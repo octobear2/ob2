@@ -1,0 +1,15 @@
+{% if message %}
+{{ message }}
+{% endif %}
+
+{% if source and commit %}
+View on GitHub: {{ github_commit_url(source, commit) }}
+{% endif %}
+View {{ build_name }}: {{ url_for("dashboard.builds_one", name=build_name, _external=True) }}
+View {{ job_name }}: {{ url_for("dashboard.assignments_one", name=job_name, _external=True) }}
+
+Build failed: {{ build_name }}
+
+{% if error_message %}
+{{ error_message }}
+{% endif %}

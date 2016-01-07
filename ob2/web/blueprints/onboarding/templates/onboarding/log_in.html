@@ -1,0 +1,39 @@
+{% from "macros/flash.html" import flash_all %}
+{% extends "_base.html" %}
+{% block body %}
+<div class="mdl-layout mdl-js-layout">
+    <main class="mdl-layout__content mdl-color--grey-100">
+        <div class="ob2-main-thin mdl-grid">
+            {{ flash_all() }}
+            <div class="ob2-content mdl-cell mdl-cell--12-col mdl-color--white
+                        mdl-color-text--grey-800 mdl-shadow--2dp">
+                <h1 class="mdl-typography--headline">Autograder for {{ course_name() }}</h1>
+                {{ show_partial("onboarding-log-in") }}
+                {% if next_step %}
+                <p>
+                    <a href="{{ next_step }}" class="mdl-button mdl-js-button mdl-js-ripple-effect
+                                                     mdl-color--amber" style="margin-right: 11px;">
+                        Log in with GitHub
+                    </a>
+                    {{- "" -}}
+                    <a href="https://github.com/join" class="mdl-button mdl-js-button
+                                                             mdl-js-ripple-effect
+                                                             mdl-color--grey-200">
+                        Create a GitHub account
+                    </a>
+                </p>
+                {% else %}
+                <p class="mdl-color-text--red-600">
+                    GitHub OAuth has not been configured. The following configuration keys need to
+                    be set:
+                </p>
+                <ul class="mdl-color-text--red-600">
+                    <li>github_oauth_consumer_key</li>
+                    <li>github_oauth_consumer_secret</li>
+                </ul>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

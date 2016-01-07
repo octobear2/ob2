@@ -1,0 +1,43 @@
+{% extends "_onboarding.html" %}
+{% block content %}
+{% for user_id, name, sid, login, github, email in [user] %}
+<div class="ob2-content mdl-cell mdl-cell--12-col mdl-color--white
+            mdl-color-text--grey-800 mdl-shadow--2dp">
+    <h4>Welcome to {{ course_name() }}!</h4>
+    <p>
+        {{ name }}, your {{ course_number() }} autograder account has been set up.
+    </p>
+    <h6>1. GitHub</h6>
+    <p>
+        Your personal GitHub repository for this course is
+        <a href="{{ github_repo_url(login) }}" target="_blank"><strong>
+            {{- github_repo_name(login) -}}
+        </strong></a>. You will use this repository to submit assignments. This is a private GitHub
+        repository that is only accessible by you and the {{ course_number() }} staff. You must
+        <strong>not</strong> use public code sharing websites to store your coursework, including
+        public GitHub repositories, public code snippet websites, and public forums.
+    </p>
+    <h6>2. The {{ course_number() }} Autograder</h6>
+    {{ show_partial("onboarding-welcome") }}
+    {% if inst_account_enabled %}
+    <h6>3. Instructional account</h6>
+    <p>
+        Your instructional account for this course is
+        <strong>{{ course_login_format(login) }}</strong>. The credentials for your instructional
+        account have been sent to your email address. You can use this instructional account to
+        access campus computing and printing resources, but an instructional account will not be
+        required for any coursework.
+    </p>
+    {% endif %}
+    <p>
+        If you have any questions, please contact your TA.
+    </p>
+    <p>
+        <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-color--amber"
+           href="{{ url_for("dashboard.index") }}">
+           OK
+        </a>
+    </p>
+</div>
+{% endfor %}
+{% endblock %}

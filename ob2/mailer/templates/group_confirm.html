@@ -1,0 +1,25 @@
+<p>The members of {{ group_name }} are:</p>
+<ul>
+{%- for _, name, email, github in group_members %}
+    <li>
+        <strong>Name:</strong> {{ name }}<br />
+        <strong>Email:</strong> {{ email }}<br />
+        <strong>GitHub:</strong> <a href="{{ github_user_url(github) }}">{{ github }}</a>
+    </li>
+{%- endfor %}
+</ul>
+<p>
+    Your group GitHub repository:
+    <a href="{{ github_repo_url(group_name) }}">
+        {{- github_repo_url(group_name) -}}
+    </a>
+</p>
+<p>
+    Welcome to your new group! You will push all of your group project code to your group GitHub
+    repository, and all the members of your group will receive grades when your group code is
+    graded.
+</p>
+<p>
+    More details are available on the
+    <a href="{{ url_for("dashboard.group", _external=True) }}">group page</a>.
+</p>

@@ -1,0 +1,32 @@
+<h3>Welcome to {{ course_name() }}</h3>
+<p>
+    {{ name }}, your {{ course_number() }} autograder account has been set up. Please save this
+    email for your own reference.
+</p>
+<p>
+    {{ course_number() }} Autograder:
+    <a href="{{ url_for("site_index", _external=True) }}">
+        {{- url_for("site_index", _external=True) -}}
+    </a>
+    <br />
+    Your personal GitHub repository:
+    <a href="{{ github_repo_url(login) }}">
+        {{- github_repo_url(login) -}}
+    </a>
+    {% if inst_account_enabled %}
+    <br />
+    Your class account: {{ course_login_format(login) }}
+    {% endif %}
+</p>
+<p>
+    A private GitHub repository has been created for you to submit your personal assignments. This
+    repository can only be accessed by you and the course instructors. You should
+    <strong>not</strong> use public repositories to store your coursework.
+</p>
+{% if inst_account_enabled %}
+<p>
+    An account form for {{ course_login_format(login) }} has been attached to this email. You
+    can use this instructional account to access campus computing and printing resources, but an
+    instructional account will not be required for any coursework.
+</p>
+{% endif %}

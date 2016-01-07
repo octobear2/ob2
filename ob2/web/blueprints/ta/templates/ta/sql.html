@@ -1,0 +1,72 @@
+{% from "macros/pagination.html" import pagination %}
+{% extends "_ta.html" %}
+{% block content %}
+<div class="ob2-content mdl-cell mdl-cell--12-col mdl-color--white mdl-color-text--grey-800
+            mdl-shadow--2dp">
+    <form action="{{ url_for("ta.sql") }}" method="post" autocomplete="off">
+        <input type="hidden" name="_csrf_token" value="{{ generate_csrf_token() }}" />
+        <h4>Data console</h4>
+        <p class="mdl-color-text--grey-600">
+            You can use this console to run read-only SQL queries for data analysis. For write
+            access, please log in to the autograder server using SSH and use the SQLite command-line
+            utility instead, for your own protection.
+        </p>
+        <div class="ob2-fullwidth mdl-textfield mdl-js-textfield">
+            <textarea class="ob2-code-input mdl-textfield__input" rows="2"
+                      id="f_query" name="f_query">{{ query }}</textarea>
+            <label class="mdl-textfield__label" for="f_query">
+                Enter SQL here
+            </label>
+        </div>
+        <p>
+            <button type="submit" id="f_action" name="f_action" value="run"
+                    class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-color--blue
+                           mdl-color-text--grey-100">
+                Run
+            </button>
+            <button type="submit" id="f_action" name="f_action" value="export"
+                    class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-color--grey-200">
+                Export to CSV
+            </button>
+        </p>
+    </form>
+</div>
+{% if query_error %}
+<div class="mdl-cell mdl-cell--12-col">
+    <pre>{{ query_error }}</pre>
+</div>
+{% endif %}
+{% if query_headers %}
+<div class="mdl-cell mdl-cell--12-col">
+    <table class="ob2-fullwidth mdl-data-table mdl-js-data-table mdl-shadow--2dp
+                  mdl-color--white">
+        <thead>
+            <tr>
+            {% for header_name, header_type in query_headers %}
+                <th class="mdl-data-table__cell--non-numeric">{{ header_name }}</th>
+            {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+        {% for row in query_rows %}
+            <tr>
+                {% for row_value in row %}
+                <td class="mdl-data-table__cell--non-numeric">
+                    {{ wrangle_to_unicode(row_value)|truncate(100, killwords=True) }}
+                </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        {% if query_more %}
+            <tr>
+                <td class="mdl-data-table__cell--non-numeric mdl-color-text--grey-600"
+                    colspan="{{ query_headers|count }}">
+                    Warning: Additional query results have been omitted. Try using a LIMIT clause.
+                </td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}

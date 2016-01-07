@@ -1,0 +1,152 @@
+{% from "macros/flash.html" import flash_all %}
+{% extends "_dashboard.html" %}
+{% block content %}
+<script>var group_limits = [{{ min_size }}, {{ max_size }}];</script>
+<script src="{{ url_for("static", filename="js/group.js") }}"></script>
+{{ flash_all() }}
+{% if groups or proposed_groups or proposing_groups %}
+<div class="ob2-content mdl-cell mdl-cell--12-col mdl-color--white mdl-shadow--2dp">
+    <h4 style="margin-bottom: -8px;">Your groups</h4>
+    {% for group, members in groups %}
+    <div class="mdl-card mdl-shadow--2dp mdl-color--amber ob2-no-min-height ob2-float"
+         style="margin-right: 24px; margin-top: 24px;">
+        <div class="mdl-card__title">
+            <h2 class="mdl-card__title-text">{{ group }}</h2>
+        </div>
+        <div class="mdl-card__supporting-text">
+            <p>
+            {% for name, email, github in members %}
+                {{ name }}
+                {% if loop.last == False %}<br />{% endif %}
+            {% endfor %}
+            </p>
+        </div>
+        <div class="mdl-card__menu">
+            <a class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect"
+                href="{{ github_repo_url(group) }}" rel="noreferrer">
+                <span class="mega-octicon octicon-mark-github"></span>
+            </a>
+        </div>
+        <div class="mdl-card__actions mdl-card--border">
+            <a class="mdl-button mdl-js-button mdl-js-ripple-effect"
+               href="mailto:
+               {%- for name, email, github in members -%}
+                   {{ name }}&lt;{{ email }}&gt;
+                   {%- if loop.last == False %},{% endif -%}
+               {%- endfor -%}
+               ">
+                Email group
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+    {% for proposed_group, invitees in proposed_groups %}
+    <div class="mdl-card mdl-shadow--2dp mdl-color--amber-50 ob2-no-min-height ob2-float"
+         style="margin-right: 24px; margin-top: 24px;">
+        <div class="mdl-card__title">
+            <h2 class="mdl-card__title-text">waiting for invitations</h2>
+        </div>
+        <div class="mdl-card__supporting-text">
+            <p>
+            {% for name, status in invitees %}
+                {{ name }} {{ invitation_status(status)|safe }}
+                {%- if loop.last == False %}<br />{% endif -%}
+            {% endfor %}
+            </p>
+        </div>
+        <div class="mdl-card__actions mdl-card--border">
+            <form action="{{ url_for("dashboard.group_respond") }}" method="post">
+                <input type="hidden" name="_csrf_token" value="{{ generate_csrf_token() }}" />
+                <input type="hidden" name="f_group" value="{{ proposed_group }}" />
+                <button class="mdl-button mdl-js-button mdl-js-ripple-effect
+                               mdl-color-text--red-800" name="f_response" value="reject"
+                               type="submit">
+                    Cancel
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+    {% for proposing_group, members in proposing_groups %}
+    <div class="mdl-card mdl-shadow--2dp mdl-color--amber-50 ob2-no-min-height ob2-float"
+         style="margin-right: 24px; margin-top: 24px;">
+        <div class="mdl-card__title">
+            <h2 class="mdl-card__title-text">Invitation</h2>
+        </div>
+        <div class="mdl-card__supporting-text">
+            <p>
+            You have been invited to join a group with
+            {%- for name, status in members -%}
+                {{- list_conjunction(loop.index0, loop.length) -}}
+                {{- name -}}
+            {%- endfor -%}.
+            </p>
+            {% if not can_add_groups %}
+            <p class="mdl-color-text--red-400" style="font-size: 87.5%; line-height: 1.5;">
+                You are in too many groups already.
+            </p>
+            {% endif %}
+        </div>
+        <div class="mdl-card__actions mdl-card--border">
+            <form action="{{ url_for("dashboard.group_respond") }}" method="post">
+                <input type="hidden" name="_csrf_token" value="{{ generate_csrf_token() }}" />
+                <input type="hidden" name="f_group" value="{{ proposing_group }}" />
+                {% if can_add_groups %}
+                <button class="mdl-button mdl-js-button mdl-js-ripple-effect
+                               mdl-color-text--green-800" name="f_response" value="accept"
+                               type="submit" >
+                    Accept
+                </button>
+                {% endif %}
+                <button class="mdl-button mdl-js-button mdl-js-ripple-effect
+                               mdl-color-text--red-800" name="f_response" value="reject"
+                               type="submit">
+                    Reject
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% if can_add_groups %}
+<div class="ob2-content mdl-cell mdl-cell--12-col mdl-color--white
+    mdl-color-text--grey-800 mdl-shadow--2dp">
+    <form action="{{ url_for("dashboard.group_create") }}" method="post" autocomplete="off">
+        <input type="hidden" name="_csrf_token" value="{{ generate_csrf_token() }}" />
+        <h4>Create a new group</h4>
+        <p class="mdl-color-text--grey-600">
+            {% if min_size == max_size %}
+            You can create a group of <strong>{{ min_size }}</strong> members.
+            {% else %}
+            You can create a group of <strong>{{ min_size }} to {{ max_size }}</strong> members.
+            {% endif %}
+            Invite your group members using their GitHub username.
+        </p>
+        <h6>Group members</h6>
+        <p class="mdl-color-text--grey-600">
+            More rows will appear as you fill them out. You do not need to invite yourself.
+        </p>
+        <div class="mdl-grid js-ob2__rows">
+            <div class="mdl-cell mdl-cell--12-col js-ob2__div_student">
+                <div class="ob2-fullwidth mdl-textfield mdl-js-textfield
+                            mdl-textfield--floating-label">
+                    <input class="js-ob2__f_github mdl-textfield__input" name="f_github"
+                           type="text" autocomplete="off" />
+                    <label class="mdl-textfield__label">
+                        GitHub username
+                    </label>
+                    <span class="mdl-textfield__error">Invalid username</span>
+                </div>
+            </div>
+        </div>
+        <p>
+            <button type="submit" class="mdl-button mdl-js-button mdl-js-ripple-effect
+                                         mdl-color--amber">
+                Create a new group
+            </button>
+        </p>
+    </form>
+</div>
+{% endif %}
+{% endblock %}

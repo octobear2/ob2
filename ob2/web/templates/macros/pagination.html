@@ -1,0 +1,27 @@
+{% macro pagination(page, link_to, more_pages=True, kwargs={}) %}
+    <div style="height: 0; overflow: visible; text-align: center; line-height: 32px;"
+         class="mdl-color-text--grey-800">
+        Page {{ page }}
+        <i class="material-icons" style="display: none;">arrow_backward</i>
+    </div>
+{% if more_pages %}
+    <a href="{{ url_for(link_to, page=(page + 1), **kwargs) }}" style="float: right;"
+       class="ob2-pagination mdl-color-text--grey-800">
+        <span style="vertical-align: middle;">Next page</span>
+        {{- "" -}}
+        <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+            <i class="material-icons">arrow_forward</i>
+        </button>
+    </a>
+{% endif %}
+{% if page > 1 %}
+    <a href="{{ url_for(link_to, page=(page - 1), **kwargs) }}"
+       class="ob2-pagination mdl-color-text--grey-800">
+        <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+            <i class="material-icons">arrow_backward</i>
+        </button>
+        {{- "" -}}
+        <span style="vertical-align: middle;">Previous page</span>
+    </a>
+{% endif %}
+{% endmacro %}

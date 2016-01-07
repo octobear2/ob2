@@ -1,0 +1,102 @@
+{% from "macros/flash.html" import flash_all %}
+{% extends "_ta.html" %}
+{% block content %}
+<script src="{{ url_for("ta.enter_grades_validation_data",
+                        _csrf_token=generate_csrf_token()) }}"></script>
+<script src="{{ url_for("static", filename="js/enter_grades.js") }}"></script>
+{{ flash_all() }}
+<div class="ob2-content mdl-cell mdl-cell--12-col mdl-color--white mdl-color-text--grey-800
+            mdl-shadow--2dp">
+    <form action="{{ url_for("ta.enter_grades_confirm") }}" method="post" autocomplete="off">
+        <input type="hidden" name="_csrf_token" value="{{ generate_csrf_token() }}" />
+        <input type="hidden" name="f_step" value="1" />
+        <h4>Enter grades</h4>
+        <p class="mdl-color-text--grey-600">
+            Your GitHub username, <strong>{{ github_username }}</strong>, will be recorded with this
+            transaction.
+        </p>
+        <h6>Transaction information (required)</h6>
+        <div class="ob2-fullwidth mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="js-ob2__f_assignment mdl-textfield__input" type="text" value=""
+                   name="f_assignment" id="f_assignment" />
+            <label class="mdl-textfield__label" for="f_assignment">
+                Assignment name (required)
+            </label>
+            <span class="mdl-textfield__error">Choose from: {{ ", ".join(assignment_names) }}</span>
+        </div>
+        <div class="ob2-fullwidth mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="js-ob2__f_description mdl-textfield__input" type="text" value=""
+                   name="f_description" id="f_description" />
+            <label class="mdl-textfield__label" for="f_description">
+                Description explaining this transaction (required, not visible to students)
+            </label>
+            <span class="mdl-textfield__error">This field is required.</span>
+        </div>
+        <h6>Students affected</h6>
+        <p class="mdl-color-text--grey-600">
+            More rows will appear as you fill them out. Leave fields blank to use current value.
+        </p>
+        <div class="mdl-grid js-ob2__rows">
+            <div class="mdl-cell mdl-cell--8-col js-ob2__div_student">
+                <div class="ob2-fullwidth mdl-textfield mdl-js-textfield
+                            mdl-textfield--floating-label">
+                    <input class="js-ob2__f_student mdl-textfield__input" name="f_student"
+                           type="text" value="" />
+                    <label class="mdl-textfield__label">
+                        SID, login, student&rsquo;s full name, or group name
+                    </label>
+                    <span class="mdl-textfield__error">No such student found</span>
+                </div>
+            </div>
+            <div class="mdl-cell mdl-cell--2-col js-ob2__div_score">
+                <div class="ob2-fullwidth mdl-textfield mdl-js-textfield
+                            mdl-textfield--floating-label">
+                    <input class="js-ob2__f_score mdl-textfield__input" name="f_score"
+                           type="text" value="" />
+                    <label class="mdl-textfield__label">
+                        Score
+                    </label>
+                    <span class="js-ob2__l_score mdl-textfield__error">Invalid score</span>
+                </div>
+            </div>
+            <div class="mdl-cell mdl-cell--2-col js-ob2__div_slipunits">
+                <div class="ob2-fullwidth mdl-textfield mdl-js-textfield
+                            mdl-textfield--floating-label">
+                    <input class="js-ob2__f_slipunits mdl-textfield__input" name="f_slipunits"
+                           type="text" pattern="[0-9]+" value="" />
+                    <label class="mdl-textfield__label">
+                        Slip {{ slip_unit_name() }}
+                    </label>
+                    <span class="mdl-textfield__error">Invalid value</span>
+                </div>
+            </div>
+        </div>
+        <h6>CSV Import</h6>
+        <p class="mdl-color-text--grey-600">
+            You can optionally import a CSV containing the same information. Please use the comma
+            character as a delimiter and the double quote character for quoting. The format should
+            be <code>Student,Grade,Slip{{ slip_unit_name() }}</code>, where <code>Student</code> is
+            a student ID, a login, a student&rsquo;s full name, or a group&rsquo;s name. Leave
+            fields blank to use current value. Do not include a header row.
+        </p>
+        <div class="ob2-fullwidth mdl-textfield mdl-js-textfield">
+            <textarea class="mdl-textfield__input" type="text" rows="2" id="f_csv"
+                      name="f_csv"></textarea>
+            <label class="mdl-textfield__label" for="f_csv">
+                Paste CSV data here
+            </label>
+        </div>
+        <p class="mdl-color-text--grey-600">
+            You will be given a chance to review this transaction on the next page before
+            submitting.
+        </p>
+        <p>
+            <button id="f_continue" type="submit" class="mdl-button mdl-js-button
+                                                         mdl-js-ripple-effect mdl-color--blue
+                                                         mdl-color-text--grey-100">
+                Continue
+            </button>
+        </p>
+    </form>
+</div>
+{% endblock %}

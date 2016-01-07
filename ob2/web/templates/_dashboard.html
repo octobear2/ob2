@@ -1,0 +1,64 @@
+{% from "macros/log_out.html" import log_out_link %}
+{% extends "_base.html" %}
+{% block body %}
+{% for id, name, sid, login, github, email in [student] %}
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-drawer">
+    <div class="mdl-layout__drawer mdl-color--amber">
+        <div class="ob2-drawer-header mdl-color--blue-grey-900 mdl-color-text--grey-100">
+            <a href="{{ github_repo_url(login) }}" rel="noreferrer" style="float: right;"
+               class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect
+                      mdl-color-text--white">
+                <span class="mega-octicon octicon-mark-github"></span>
+            </a>
+            <span class="ob2-drawer-header__title">{{ course_number() }}</span>
+            <span class="ob2-drawer-header__subtitle">
+                {{ name }}
+            </span>
+        </div>
+        <nav class="mdl-navigation">
+            <a class="mdl-navigation__link mdl-color-text--grey-900 ob2-hover--amber-600"
+                href="{{ url_for("dashboard.assignments") }}">
+                Assignments
+            </a>
+            <a class="mdl-navigation__link mdl-color-text--grey-900 ob2-hover--amber-600"
+                href="{{ url_for("dashboard.builds") }}">
+                Builds
+            </a>
+            {% if groups_enabled %}
+            <a class="mdl-navigation__link mdl-color-text--grey-900 ob2-hover--amber-600"
+                href="{{ url_for("dashboard.group") }}">
+                Group
+            </a>
+            {% endif %}
+            {% call log_out_link() %}
+                <a class="mdl-navigation__link mdl-color-text--grey-900 ob2-hover--amber-600"
+                    href="{{ url_for("onboarding.log_out") }}">
+                    Log out
+                </a>
+            {% endcall %}
+        </nav>
+    </div>
+    <main class="mdl-layout__content mdl-color--grey-100">
+        <div class="ob2-main mdl-grid">
+        {% block content %}
+        {% endblock %}
+        </div>
+        {% if is_ta %}
+            {# Some extra padding so the bottom bar doesn't block the end of the page #}
+            <div style="height: 46px;"></div>
+        {% endif %}
+    </main>
+</div>
+{% if is_ta %}
+<div class="mdl-color--blue mdl-color-text--grey-100 mdl-shadow--8dp"
+     style="padding: 5px 14px; text-align: center; position: absolute; bottom: 0; right: 15px;
+            z-index: 10000; vertical-align: middle;">
+    You are assuming the account of {{ name }} ({{ course_login_format(login) }})
+    <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-color--blue-600
+              mdl-color-text--grey-100" style="margin-left: 6px;" href="{{ url_for("ta.index") }}">
+        Return to TA
+    </a>
+</div>
+{% endif %}
+{% endfor %}
+{% endblock %}
