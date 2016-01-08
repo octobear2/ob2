@@ -33,8 +33,14 @@ Here is the quickest way of getting started with ob2.
 
 At this point, you should have a working instance of ob2, but it will not be very useful. You
 won't be able to log in without GitHub OAuth tokens, and there won't be any jobs configured.
-See the article on [Configuring ob2](http://github.com/octobear2/ob2/TODO-put-link-here) to get
+
+See the article on [Configuring ob2](https://github.com/octobear2/ob2/wiki/Configuring-ob2) to get
 started on setting up your own ob2 configuration.
+
+If you want to use VMware Fusion instead of VirtualBox, see [VMware Fusion support](https://github.com/octobear2/ob2/wiki/Setting-up-ob2-(the-easy-way)#vmware-fusion-support).
+
+For more details about setting up ob2 in production environments, see [Setting up ob2 (the hard way)](https://github.com/octobear2/ob2/wiki/Setting-up-ob2-(the-hard-way)).
+
 
 ## Contributing
 
