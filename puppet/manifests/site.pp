@@ -54,6 +54,8 @@ node default {
       "unzip",
       "libffi-dev",
       "libssl-dev",
+      "vim",
+      "sqlite3",
     ]:
       ensure => installed;
     "virtualenv":
