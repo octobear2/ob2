@@ -43,6 +43,7 @@
       this.context.drawImage(this.image, 0, 0, this.canvas_width, this.canvas_height);
       this.canvas.addEventListener("mousedown", this.mousedown);
       this.canvas.addEventListener("mouseup", this.mouseup);
+      this.canvas.addEventListener("mouseleave", this.mouseup);
       this.canvas.addEventListener("mousemove", this.mousemove);
       this.param_size = Math.min(this.canvas_width, this.canvas_height);
       this.param_topleft = [(this.canvas_width - this.param_size) / 2, (this.canvas_height - this.param_size) / 2];

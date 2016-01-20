@@ -24,6 +24,7 @@ class Photocrop
         @context.drawImage @image, 0, 0, @canvas_width, @canvas_height
         @canvas.addEventListener "mousedown", @mousedown
         @canvas.addEventListener "mouseup", @mouseup
+        @canvas.addEventListener "mouseleave", @mouseup
         @canvas.addEventListener "mousemove", @mousemove
         @param_size = Math.min @canvas_width, @canvas_height
         @param_topleft = [(@canvas_width - @param_size) / 2,
