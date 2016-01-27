@@ -25,6 +25,8 @@ def get_repo_type(repo_name):
         repo_type = "group"
     elif re.match(r'^[a-z]{2,3}$', repo_name):
         repo_type = "personal"
+    else:
+        repo_type = None
 
     # This is a useful hook to change how repos are classified, based on their name. The default is
     # pretty good, but you may have extra repos that don't exactly follow this naming scheme.
