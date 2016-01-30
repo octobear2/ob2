@@ -279,13 +279,13 @@ def students_one(identifier, type_):
             photo = get_photo(c, user_id)
             if photo:
                 photo_base64 = binascii.b2a_base64(photo)
-        c.execute('''SELECT users.name, users.github, groupsusers.`group`
+        c.execute('''SELECT users.id, users.name, users.github, groupsusers.`group`
                      FROM groupsusers LEFT JOIN users ON groupsusers.user = users.id
                      WHERE groupsusers.`group` IN
                          (SELECT `group` FROM groupsusers WHERE user = ?)''', [user_id])
         groups = OrderedDict()
-        for name, github, group in c.fetchall():
-            groups.setdefault(group, []).append((name, github))
+        for g_user_id, g_name, g_github, g_group in c.fetchall():
+            groups.setdefault(g_group, []).append((g_user_id, g_name, g_github))
         grouplimit = get_grouplimit(c, user_id)
         c.execute('''SELECT transaction_name, source, assignment, score, slipunits, updated,
                      description FROM gradeslog WHERE user = ? ORDER BY updated DESC''',

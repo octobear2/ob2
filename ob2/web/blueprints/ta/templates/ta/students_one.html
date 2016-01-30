@@ -91,10 +91,14 @@
                     </a>
                 </td>
                 <td class="mdl-data-table__cell--non-numeric">
-                    {%- for name, github in members -%}
+                    {%- for g_user_id, g_name, g_github in members -%}
                         {{- list_conjunction(loop.index0, loop.length) -}}
-                        <a href="{{ url_for("ta.students_one", identifier=github, type_="github") }}">
-                            {{- name -}}
+                        {% if g_github %}
+                        <a href="{{ url_for("ta.students_one", identifier=g_github, type_="github") }}">
+                        {% else %}
+                        <a href="{{ url_for("ta.students_one", identifier=g_user_id, type_="user_id") }}">
+                        {% endif %}
+                            {{- g_name -}}
                         </a>
                     {%- endfor -%}
                 </td>
