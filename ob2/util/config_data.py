@@ -76,4 +76,8 @@ def validate_config():
         if not assignment.manual_grading:
             assert get_job(assignment.name), "No job found for %s" % assignment.name
 
+    for array_key in ["github_ta_usernames",
+                      "github_webhook_secrets"]:
+        assert not isinstance(getattr(config, array_key), basestring)
+
     assert len(set([a.name for a in config.assignments])) == len(config.assignments)
