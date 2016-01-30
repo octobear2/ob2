@@ -43,7 +43,11 @@
             <tr>
                 <td class="mdl-data-table__cell--non-numeric">GitHub Username</td>
                 <td class="mdl-data-table__cell--non-numeric">
+                    {% if github %}
                     <a rel="noreferrer" href="{{ github_user_url(github) }}">{{ github }}</a>
+                    {% else %}
+                    &mdash;
+                    {% endif %}
                 </td>
             </tr>
             <tr>

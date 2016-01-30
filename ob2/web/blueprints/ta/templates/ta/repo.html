@@ -44,7 +44,11 @@
                 <td class="mdl-data-table__cell--non-numeric">{{ sid }}</td>
                 <td class="mdl-data-table__cell--non-numeric">{{ login }}</td>
                 <td class="mdl-data-table__cell--non-numeric">
+                    {% if github %}
                     <a rel="noreferrer" href="{{ github_user_url(github) }}">{{ github }}</a>
+                    {% else %}
+                    &mdash;
+                    {% endif %}
                 </td>
                 <td class="mdl-data-table__cell--non-numeric">
                     <a href="mailto:{{ email }}">{{ email }}</a>
