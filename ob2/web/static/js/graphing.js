@@ -1,8 +1,8 @@
 $(document).ready(function() {
     function draw_histogram(graph_html, data) {
-        var minX = d3.min(data, function(d) { return d.x; });
+        var minX = Math.min(0, d3.min(data, function(d) { return d.x; }));
         var maxX = d3.max(data, function(d) { return d.dx; });
-        var minY = d3.min(data, function(d) { return d.y; });
+        var minY = Math.min(0, d3.min(data, function(d) { return d.y; }));
         var maxY = d3.max(data, function(d) { return d.y; });
         var graph = $(graph_html);
         var graphWidth = graph.width();
