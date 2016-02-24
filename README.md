@@ -13,6 +13,7 @@ Here is the quickest way of getting started with ob2.
 1. Download Vagrant and VirtualBox
 1. Download a copy of ob2 and run `vagrant up` inside the project root
 1. Use `vagrant ssh` to log in to the virtual machine
+1. Run `sudo apt-get install linux-image-extra-$(uname -r)` and then **reboot the VM** with `vagrant reload`. If apt-get reported that the kernel extras package is already installed, you don't need to reboot.
 1. Create a new Python virtual environment with `virtualenv ./env`
 1. Activate the new virtual environment with `source ./env/bin/activate`
 1. The ob2 code is mounted inside the virtual machine at `~/src`, so enter the directory with `cd src/`
