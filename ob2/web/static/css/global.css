@@ -187,6 +187,18 @@ pre {
   box-shadow: 0 0 1px rgba(0, 0, 0, 0.4);
 }
 
+.ob2-group-photos-table {
+  margin-top: 16px;
+}
+
+.ob2-photo-group {
+  max-width: 128px;
+  max-height: 128px;
+  margin-top: 12px;
+  margin-bottom: 24px;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.4);
+}
+
 .ob2-footer {
   margin-bottom: 1.5em;
   font-size: 0.875em;

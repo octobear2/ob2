@@ -480,6 +480,21 @@
     </td>
 {% endmacro %}
 
+{% macro cell_gradeslog_student_photo_group(user_id, github, name, photo_base64) %}
+    <td class="mdl-data-table__cell--non-numeric">
+        {% if github %}
+        <a href="{{ url_for("ta.students_one", identifier=github, type_="github") }}">
+        {% else %}
+        <a href="{{ url_for("ta.students_one", identifier=user_id, type_="user_id") }}">
+        {% endif %}
+            <div class="mdl-typography--subhead-color-contrast mdl-typography--text-center">{{ name }}</div>
+            {% if photo_base64 %}
+            <img class="ob2-photo-group" src="data:image/jpeg;base64,{{ photo_base64 }}" />
+            {% endif %}
+        </a>
+    </td>
+{% endmacro %}
+
 {% macro row_gradeslog_student(name, github, user_id, super=False) %}
     <tr>
         <td class="mdl-data-table__cell--non-numeric">Student</td>

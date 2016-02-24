@@ -497,6 +497,16 @@ def repo(name):
         c.execute('''SELECT id, name, sid, login, github, email, super FROM users
                      WHERE id in (%s)''' % ",".join(["?"] * len(owners)), owners)
         students = c.fetchall()
+        photos = None
+        if student_photos_enabled:
+            photos = []
+            for s in students:
+                user_id, name, _, _, github, _, _ = s
+                photo_base64 = None
+                photo = get_photo(c, user_id)
+                if photo:
+                    photo_base64 = binascii.b2a_base64(photo)
+                    photos.append((user_id, github, name, photo_base64))
         c.execute('''SELECT build_name, source, status, score, `commit`, message, job, started
                      FROM builds WHERE source = ? ORDER BY started DESC''', [name])
         builds = c.fetchall()
@@ -507,7 +517,9 @@ def repo(name):
     return render_template("ta/repo.html",
                            name=name,
                            students=students,
+                           photos=photos,
                            builds_info=builds_info,
+                           student_photos_enabled=student_photos_enabled,
                            **_template_common())
 
 

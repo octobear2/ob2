@@ -1,5 +1,6 @@
 {% from "macros/datatables.html" import cell_build_name, cell_status, cell_commit, cell_message,
-                                        cell_job, cell_build_started, cell_gradeslog_student %}
+                                        cell_job, cell_build_started, cell_gradeslog_student,
+                                        cell_gradeslog_student_photo_group %}
 {% extends "_ta.html" %}
 {% block content %}
 <div class="mdl-cell mdl-cell--12-col">
@@ -58,6 +59,18 @@
         {% endfor %}
         </tbody>
     </table>
+    {% if student_photos_enabled %}
+    <table class="ob2-main ob2-group-photos-table mdl-data-table mdl-js-data-table mdl-shadow--2dp
+        mdl-color--white">
+        <tbody>
+            <tr class="ob2-no-hover">
+                {% for user_id, github, name, photo_base64 in photos %}
+                {{ cell_gradeslog_student_photo_group(user_id, github, name, photo_base64) }}
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+    {% endif %}
     <h4>Builds</h4>
     <table class="ob2-fullwidth mdl-data-table mdl-js-data-table mdl-shadow--2dp
                   mdl-color--white">
