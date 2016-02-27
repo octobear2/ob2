@@ -487,11 +487,11 @@ def assignments_one_timeseries_grade_percentiles(name):
     return resp
 
 
-@blueprint.route("/ta/repo/<name>/")
+@blueprint.route("/ta/repo/<repo>/")
 @_require_ta
-def repo(name):
+def repo(repo):
     with DbCursor() as c:
-        owners = get_repo_owners(c, name)
+        owners = get_repo_owners(c, repo)
         if not owners:
             abort(404)
         c.execute('''SELECT id, name, sid, login, github, email, super FROM users
@@ -515,7 +515,7 @@ def repo(name):
         builds_info = (build + (full_scores.get(build[6]),) for build in builds)
 
     return render_template("ta/repo.html",
-                           name=name,
+                           repo=repo,
                            students=students,
                            photos=photos,
                            builds_info=builds_info,

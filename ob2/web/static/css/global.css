@@ -191,12 +191,20 @@ pre {
   margin-top: 16px;
 }
 
-.ob2-photo-group {
+.ob2-group-photos-table .ob2-group-photos-table--cell {
+  width: 164px;
+  height: auto;
+  padding: 12px 18px;
+  text-align: center;
+  vertical-align: middle;
+  white-space: normal;
+}
+
+.ob2-group-photos-table--cell--photo {
   max-width: 128px;
   max-height: 128px;
-  margin-top: 12px;
-  margin-bottom: 24px;
   box-shadow: 0 0 1px rgba(0, 0, 0, 0.4);
+  margin: 12px 0;
 }
 
 .ob2-footer {

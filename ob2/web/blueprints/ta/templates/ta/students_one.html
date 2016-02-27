@@ -90,7 +90,7 @@
         {% for group, members in groups %}
             <tr>
                 <td class="mdl-data-table__cell--non-numeric">
-                    <a href="{{ url_for("ta.repo", name=group) }}">
+                    <a href="{{ url_for("ta.repo", repo=group) }}">
                         {{ group }}
                     </a>
                 </td>

@@ -100,7 +100,7 @@
         {% if link_to == "github" %}
         <a href="{{ github_repo_url(source) }}">
         {% elif link_to == "ta" %}
-        <a href="{{ url_for("ta.repo", name=source) }}">
+        <a href="{{ url_for("ta.repo", repo=source) }}">
         {% endif %}
             {{ source }}
         </a>
@@ -467,8 +467,8 @@
     </tr>
 {% endmacro %}
 
-{% macro cell_gradeslog_student(name, github, user_id, super=False) %}
-    <td class="mdl-data-table__cell--non-numeric">
+{% macro cell_gradeslog_student(name, github, user_id, super=False, cell_class='') %}
+        <td class="mdl-data-table__cell--non-numeric {{ cell_class }}">
         {% if github %}
         <a href="{{ url_for("ta.students_one", identifier=github, type_="github") }}">
         {% else %}
@@ -477,21 +477,6 @@
             {{- name -}}
         </a>
         {%- if super %} (Staff){% endif %}
-    </td>
-{% endmacro %}
-
-{% macro cell_gradeslog_student_photo_group(user_id, github, name, photo_base64) %}
-    <td class="mdl-data-table__cell--non-numeric">
-        {% if github %}
-        <a href="{{ url_for("ta.students_one", identifier=github, type_="github") }}">
-        {% else %}
-        <a href="{{ url_for("ta.students_one", identifier=user_id, type_="user_id") }}">
-        {% endif %}
-            <div class="mdl-typography--subhead-color-contrast mdl-typography--text-center">{{ name }}</div>
-            {% if photo_base64 %}
-            <img class="ob2-photo-group" src="data:image/jpeg;base64,{{ photo_base64 }}" />
-            {% endif %}
-        </a>
     </td>
 {% endmacro %}
 

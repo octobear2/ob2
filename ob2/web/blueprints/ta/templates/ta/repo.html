@@ -14,8 +14,8 @@
             <tr>
                 <td class="mdl-data-table__cell--non-numeric">Repo URL</td>
                 <td class="mdl-data-table__cell--non-numeric">
-                    <a href="{{ github_repo_url(name) }}">
-                        {{ github_repo_url(name) }}
+                    <a href="{{ github_repo_url(repo) }}">
+                        {{ github_repo_url(repo) }}
                     </a>
                 </td>
             </tr>
@@ -64,8 +64,17 @@
         mdl-color--white">
         <tbody>
             <tr class="ob2-no-hover">
-                {% for user_id, github, name, photo_base64 in photos %}
-                {{ cell_gradeslog_student_photo_group(user_id, github, name, photo_base64) }}
+                {% for user_id, github, name, _ in photos %}
+                {{ cell_gradeslog_student(name, github, user_id, cell_class='ob2-group-photos-table--cell') }}
+                {% endfor %}
+            </tr>
+            <tr class="ob2-no-hover">
+                {% for _, _, _, photo_base64 in photos %}
+                <td class="ob2-group-photos-table--cell">
+                    {% if photo_base64 %}
+                    <img class="ob2-group-photos-table--cell--photo" src="data:image/jpeg;base64,{{ photo_base64 }}" />
+                    {% endif %}
+                </td>
                 {% endfor %}
             </tr>
         </tbody>
