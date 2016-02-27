@@ -100,7 +100,7 @@
         {% if link_to == "github" %}
         <a href="{{ github_repo_url(source) }}">
         {% elif link_to == "ta" %}
-        <a href="{{ url_for("ta.repo", name=source) }}">
+        <a href="{{ url_for("ta.repo", repo=source) }}">
         {% endif %}
             {{ source }}
         </a>
@@ -467,8 +467,8 @@
     </tr>
 {% endmacro %}
 
-{% macro cell_gradeslog_student(name, github, user_id, super=False) %}
-    <td class="mdl-data-table__cell--non-numeric">
+{% macro cell_gradeslog_student(name, github, user_id, super=False, cell_class='') %}
+        <td class="mdl-data-table__cell--non-numeric {{ cell_class }}">
         {% if github %}
         <a href="{{ url_for("ta.students_one", identifier=github, type_="github") }}">
         {% else %}

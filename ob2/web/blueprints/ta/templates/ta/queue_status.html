@@ -41,7 +41,7 @@
                     </a>
                 </td>
                 <td class="mdl-data-table__cell--non-numeric">
-                    <a href="{{ url_for("ta.repo", name=job.source) }}">{{ job.source }}</a>
+                    <a href="{{ url_for("ta.repo", repo=job.source) }}">{{ job.source }}</a>
                 </td>
                 <td class="mdl-data-table__cell--non-numeric">
                     {{ job.trigger }}
