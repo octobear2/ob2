@@ -54,6 +54,11 @@
   border-right: none;
 }
 
+.mdl-layout__drawer .mdl-navigation .mdl-navigation__link {
+  /* Ignore media query that shrinks this padding. */
+  padding: 16px 40px;
+}
+
 .ob2-hover--blue-600:hover {
   background-color: rgb(30,136,229) !important;
 }
@@ -184,6 +189,12 @@ pre {
 .ob2-photo {
   max-width: 128px;
   max-height: 128px;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.4);
+}
+
+.ob2-photo-small {
+  max-width: 48px;
+  max-height: 48px;
   box-shadow: 0 0 1px rgba(0, 0, 0, 0.4);
 }
 

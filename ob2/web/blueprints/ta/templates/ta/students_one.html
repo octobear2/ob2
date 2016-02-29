@@ -20,12 +20,12 @@
                 <td class="mdl-data-table__cell--non-numeric">Name</td>
                 <td class="mdl-data-table__cell--non-numeric">{{ name }}</td>
             </tr>
-            {% if student_photos_enabled %}
+            {% if student_photos_enabled() %}
             <tr class="ob2-no-hover">
                 <td class="mdl-data-table__cell--non-numeric">Photo</td>
                 <td class="mdl-data-table__cell--non-numeric ob2-multiline-row">
-                {% if photo_base64 %}
-                    <img class="ob2-photo" src="data:image/jpeg;base64,{{ photo_base64 }}" />
+                {% if photo %}
+                    <img class="ob2-photo" src="data:image/jpeg;base64,{{ b2a_base64(photo) }}" />
                 {% else %}
                     None
                 {% endif %}
@@ -90,7 +90,7 @@
         {% for group, members in groups %}
             <tr>
                 <td class="mdl-data-table__cell--non-numeric">
-                    <a href="{{ url_for("ta.repo", name=group) }}">
+                    <a href="{{ url_for("ta.repo", repo=group) }}">
                         {{ group }}
                     </a>
                 </td>

@@ -1,4 +1,5 @@
 from ansi2html import Ansi2HTMLConverter
+from binascii import b2a_base64
 from markupsafe import Markup
 
 import ob2.config as config
@@ -189,4 +190,6 @@ JINJA_EXPORTS = {
     "course_name": lambda: config.course_name,
     "course_number": lambda: config.course_number,
     "course_login_format": lambda login: config.course_login_format % login,
+    "b2a_base64": b2a_base64,
+    "student_photos_enabled": lambda: config.student_photos_enabled,
 }

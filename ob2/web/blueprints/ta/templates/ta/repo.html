@@ -1,5 +1,6 @@
 {% from "macros/datatables.html" import cell_build_name, cell_status, cell_commit, cell_message,
-                                        cell_job, cell_build_started, cell_gradeslog_student %}
+                                        cell_job, cell_build_started, cell_gradeslog_student,
+                                        cell_gradeslog_student_photo_group %}
 {% extends "_ta.html" %}
 {% block content %}
 <div class="mdl-cell mdl-cell--12-col">
@@ -8,13 +9,13 @@
         <tbody>
             <tr>
                 <td class="mdl-data-table__cell--non-numeric">Name</td>
-                <td class="mdl-data-table__cell--non-numeric">{{ name }}</td>
+                <td class="mdl-data-table__cell--non-numeric">{{ repo }}</td>
             </tr>
             <tr>
                 <td class="mdl-data-table__cell--non-numeric">Repo URL</td>
                 <td class="mdl-data-table__cell--non-numeric">
-                    <a href="{{ github_repo_url(name) }}">
-                        {{ github_repo_url(name) }}
+                    <a href="{{ github_repo_url(repo) }}">
+                        {{ github_repo_url(repo) }}
                     </a>
                 </td>
             </tr>
@@ -25,6 +26,9 @@
                   mdl-color--white">
         <thead>
             <tr>
+                {% if student_photos_enabled() %}
+                <th class="mdl-data-table__cell--non-numeric" style="width: 48px;"></th>
+                {% endif %}
                 <th class="mdl-data-table__cell--non-numeric">Name</th>
                 <th class="mdl-data-table__cell--non-numeric">Student ID</th>
                 <th class="mdl-data-table__cell--non-numeric">Login</th>
@@ -38,8 +42,15 @@
             </tr>
         </thead>
         <tbody>
-        {% for id, name, sid, login, github, email, super in students %}
-            <tr>
+        {% for id, name, sid, login, github, email, super, photo in students %}
+            <tr class="ob2-no-hover">
+                {% if student_photos_enabled() %}
+                <td class="mdl-data-table__cell--non-numeric" style="padding-top: 0; padding-bottom: 0; width: 48px;">
+                    {% if photo %}
+                    <img class="ob2-photo-small" src="data:image/jpeg;base64,{{ b2a_base64(photo) }}" />
+                    {% endif %}
+                </td>
+                {% endif %}
                 {{ cell_gradeslog_student(name, github, id, super=super) }}
                 <td class="mdl-data-table__cell--non-numeric">{{ sid }}</td>
                 <td class="mdl-data-table__cell--non-numeric">{{ login }}</td>

@@ -42,7 +42,7 @@
                 </td>
                 <td class="mdl-data-table__cell--non-numeric">
                 {% if source != None %}
-                    <a href="{{ url_for("ta.repo", name=source) }}">
+                    <a href="{{ url_for("ta.repo", repo=source) }}">
                         {{ source }}
                     </a>
                 {% else %}

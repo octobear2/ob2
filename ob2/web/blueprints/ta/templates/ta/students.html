@@ -17,11 +17,11 @@
         </thead>
         <tbody>
         {% for user_id, name, sid, login, github, email, super in students %}
-        {% if github == github_username %}
+            {% if github == github_username %}
             <tr class="mdl-color--yellow-50">
-        {% else %}
+            {% else %}
             <tr>
-        {% endif %}
+            {% endif %}
                 {{ cell_gradeslog_student(name, github, user_id, super) }}
                 <td class="mdl-data-table__cell--non-numeric">{{ sid }}</td>
                 {{ cell_source(login, link_to="ta") }}

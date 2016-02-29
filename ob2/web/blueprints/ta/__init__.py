@@ -274,11 +274,9 @@ def students_one(identifier, type_):
             abort(404)
         user_id, _, _, _, _, _ = student
         super_ = get_super(c, user_id)
-        photo = photo_base64 = None
+        photo = None
         if student_photos_enabled:
             photo = get_photo(c, user_id)
-            if photo:
-                photo_base64 = binascii.b2a_base64(photo)
         c.execute('''SELECT users.id, users.name, users.github, groupsusers.`group`
                      FROM groupsusers LEFT JOIN users ON groupsusers.user = users.id
                      WHERE groupsusers.`group` IN
@@ -304,8 +302,7 @@ def students_one(identifier, type_):
     return render_template("ta/students_one.html",
                            student=student,
                            super_=super_,
-                           student_photos_enabled=student_photos_enabled,
-                           photo_base64=photo_base64,
+                           photo=photo,
                            groups=groups.items(),
                            grouplimit=grouplimit,
                            events=events,
@@ -487,25 +484,25 @@ def assignments_one_timeseries_grade_percentiles(name):
     return resp
 
 
-@blueprint.route("/ta/repo/<name>/")
+@blueprint.route("/ta/repo/<repo>/")
 @_require_ta
-def repo(name):
+def repo(repo):
     with DbCursor() as c:
-        owners = get_repo_owners(c, name)
+        owners = get_repo_owners(c, repo)
         if not owners:
             abort(404)
-        c.execute('''SELECT id, name, sid, login, github, email, super FROM users
+        c.execute('''SELECT id, name, sid, login, github, email, super, photo FROM users
                      WHERE id in (%s)''' % ",".join(["?"] * len(owners)), owners)
         students = c.fetchall()
         c.execute('''SELECT build_name, source, status, score, `commit`, message, job, started
-                     FROM builds WHERE source = ? ORDER BY started DESC''', [name])
+                     FROM builds WHERE source = ? ORDER BY started DESC''', [repo])
         builds = c.fetchall()
         full_scores = {assignment.name: assignment.full_score
                        for assignment in config.assignments}
         builds_info = (build + (full_scores.get(build[6]),) for build in builds)
 
     return render_template("ta/repo.html",
-                           name=name,
+                           repo=repo,
                            students=students,
                            builds_info=builds_info,
                            **_template_common())
