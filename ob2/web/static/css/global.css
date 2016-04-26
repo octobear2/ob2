@@ -59,6 +59,12 @@
   padding: 16px 40px;
 }
 
+.mdl-data-table {
+  /* Chrome rendering bug
+   * https://github.com/google/material-design-lite/issues/4270 */
+  position: static;
+}
+
 .ob2-hover--blue-600:hover {
   background-color: rgb(30,136,229) !important;
 }
