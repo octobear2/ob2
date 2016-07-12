@@ -397,6 +397,7 @@ def group_create():
         abort(404)
     try:
         githubs = request.form.getlist("f_github")
+        github_job = None
         mailer_jobs = []
         with DbCursor() as c:
             student = _get_student(c)
@@ -439,10 +440,28 @@ def group_create():
             c.execute("INSERT INTO invitations (invitation_id, user, status) VALUES (?, ?, ?)",
                       [invitation_id, inviter_user_id, ACCEPTED])
             modify_grouplimit(c, inviter_user_id, -1)
-            finalize_group_if_ready(c, invitation_id)
+            group_name, group_members = finalize_group_if_ready(c, invitation_id)
+            if group_name:
+                if not config.github_read_only_mode:
+                    group_githubs = []
+                    for _, _, _, github in group_members:
+                        assert github, "GitHub handle is empty"
+                        group_githubs.append(github)
+                    github_job = repomanager_queue.create(c, "assign_repo",
+                                                          (group_name, group_githubs))
+                if config.mailer_enabled:
+                    for _, name, email, github in group_members:
+                        email_payload = create_email("group_confirm", email,
+                                                     "%s has been created" % group_name,
+                                                     group_name=group_name,
+                                                     name=name, group_members=group_members)
+                        mailer_job = mailer_queue.create(c, "send", email_payload)
+                        mailer_jobs.append(mailer_job)
         if config.mailer_enabled:
             for mailer_job in mailer_jobs:
                 mailer_queue.enqueue(mailer_job)
+        if github_job and not config.github_read_only_mode:
+            repomanager_queue.enqueue(github_job)
         return redirect(url_for("dashboard.group"))
     except ValidationError as e:
         return redirect_with_error(url_for("dashboard.group"), e)
