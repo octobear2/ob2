@@ -72,8 +72,4 @@ node default {
 
   include ob2::docker
 
-  # Configure NGINX
-
-  include nginx
-
 }
