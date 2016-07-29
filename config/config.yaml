@@ -118,14 +118,16 @@ web_host: "0.0.0.0"
 # The port number to bind on (in conjunction with the value of 'web_host')
 web_port: 5002
 
-# The public hostname (and port number) of the autograder. Do not include a path or a protocol.
-# If you are running behind a reverse proxy, then this port number does not need to match the value
-# of 'web_port'.
+# The publicly-accessible hostname of the autograder. E.g. What do visitors type into the URL bar?
+# Do not include a path or a protocol. Include a port number only if it's NOT 80 or 443.
+# This port number does not need to match the value of 'web_port' (for example, if the autograder is
+# normally accessed via a reverse proxy).
+# For example, "cs162.eecs.berkeley.edu".
 web_public_host: "localhost:5002"
 
 # You can run the autograder in a subdirectory. For example, if the autograder is running at
 # https://example.com/tools/autograder/, then you should set this to "tools/autograder" (always omit
-# the trailing and leading slash). You can set this to "" if the autograder is not running in a
+# the trailing and leading slash). You should set this to "" if the autograder is not running in a
 # subdirectory.
 web_public_root: ""
 

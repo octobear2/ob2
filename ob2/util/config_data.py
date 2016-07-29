@@ -80,4 +80,11 @@ def validate_config():
                       "github_webhook_secrets"]:
         assert not isinstance(getattr(config, array_key), basestring)
 
+    # The port number should be ommitted if it is the default HTTP/HTTPS port.
+    assert not config.web_public_host.endswith(":80")
+    assert not config.web_public_host.endswith(":443")
+
+    assert not config.web_public_root.startswith("/")
+    assert not config.web_public_root.endswith("/")
+
     assert len(set([a.name for a in config.assignments])) == len(config.assignments)
