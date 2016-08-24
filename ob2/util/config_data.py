@@ -84,7 +84,10 @@ def validate_config():
     assert not config.web_public_host.endswith(":80")
     assert not config.web_public_host.endswith(":443")
 
-    assert not config.web_public_root.startswith("/")
-    assert not config.web_public_root.endswith("/")
+
+    assert not config.web_public_root == "/", "Set web_public_root to empty string instead."
+    assert config.web_public_root == "" or config.web_public_root.startswith("/"), \
+            "If the web_public_root is not empty, always include the leading slash."
+    assert not config.web_public_root.endswith("/"), "Remove trailing slash from web_public_root"
 
     assert len(set([a.name for a in config.assignments])) == len(config.assignments)

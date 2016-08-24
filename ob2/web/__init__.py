@@ -23,7 +23,7 @@ if config.web_behind_proxy:
     app.wsgi_app = ProxyFix(app.wsgi_app)
 app.logger.addHandler(StreamHandler(sys.stdout))
 app.debug = config.debug_mode
-app.config["SESSION_COOKIE_PATH"] = config.web_public_root
+app.config["SESSION_COOKIE_PATH"] = config.web_public_root + "/"
 app.config["SESSION_COOKIE_SECURE"] = config.web_https
 app.config["SERVER_NAME"] = config.web_public_host
 app.jinja_env.globals.update(JINJA_EXPORTS)
