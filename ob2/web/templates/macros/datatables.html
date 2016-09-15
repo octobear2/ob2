@@ -476,7 +476,8 @@
         {% endif %}
             {{- name -}}
         </a>
-        {%- if super %} (Staff){% endif %}
+        {%- if super > 0 %} (Staff){% endif %}
+        {%- if super < 0 %} (Dropped){% endif %}
     </td>
 {% endmacro %}
 
