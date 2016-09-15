@@ -69,7 +69,13 @@
             <tr>
                 <td class="mdl-data-table__cell--non-numeric">Staff</td>
                 <td class="mdl-data-table__cell--non-numeric">
-                    {{ "True" if super_ else "False" }}
+                    {{ "True" if super_ > 0 else "False" }}
+                </td>
+            </tr>
+            <tr>
+                <td class="mdl-data-table__cell--non-numeric">Dropped</td>
+                <td class="mdl-data-table__cell--non-numeric">
+                    {{ "True" if super_ < 0 else "False" }}
                 </td>
             </tr>
         </tbody>
