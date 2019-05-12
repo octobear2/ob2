@@ -111,6 +111,10 @@ timezone: "US/Pacific"
 # need a special AppArmor profile.
 dockergrader_apparmor_profile: ""
 
+# An optional limit on the maximum number of QUEUED or IN_PROGRESS jobs any given source can have.
+# Default is unlimited.
+# max_ongoing_jobs: 1
+
 # The interface to listen on for HTTP requests. If you're using a reverse proxy, you probably want
 # to set this to '127.0.0.1', to prevent direct external access to this web server.
 web_host: "0.0.0.0"
