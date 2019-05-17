@@ -140,7 +140,8 @@ class Worker(object):
                     slipunits = slip_units(due_date, started)
                     affected_users = assign_grade_batch(c, owners, job_name, float(score),
                                                         slipunits, build_name, "Automatic build.",
-                                                        "autograder", dont_lower=True)
+                                                        "autograder",
+                                                        dont_lower=config.use_max_score_build)
                     break
             except apsw.Error:
                 self._log("Exception raised while assigning grades", exc=True)

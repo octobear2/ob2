@@ -80,6 +80,12 @@ slip_unit_name_plural: "days"
 slip_seconds_per_unit: 86400
 slip_grace_period: 0
 
+# Whether to use the build with the max score to assign scores and slip days.
+# If false, then the most recent build will be used to assign scores and slip days.
+# Otherwise, even if a lower score or slip days should have been consumed, the build
+# with the max score will be used and slip days will not be consumed for building.
+use_max_score_build: false
+
 # On/Off switch for the groups feature. You can turn this feature on midway through the semester, if
 # you would like. Once this feature is enabled, you should not switch it off again.
 groups_enabled: false
