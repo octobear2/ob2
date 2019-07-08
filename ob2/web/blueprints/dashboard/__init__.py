@@ -29,6 +29,7 @@ from ob2.util.group_constants import ACCEPTED, INVITED, REJECTED
 from ob2.util.security import require_csrf_token
 from ob2.util.time import now_compare, slip_units_now
 from ob2.util.validation import fail_validation, ValidationError, redirect_with_error
+from ob2.util.job_limiter import rate_limit_fail_build, should_limit_source
 
 blueprint = Blueprint("dashboard", __name__, template_folder="templates")
 
@@ -258,8 +259,11 @@ def build_now():
     with DbCursor() as c:
         build_name = create_build(c, job_name, repo, branch_hash, message)
 
-    job = Job(build_name, repo, "Web interface")
-    dockergrader_queue.enqueue(job)
+    if should_limit_source(repo):
+        rate_limit_fail_build(build_name)
+    else:
+        job = Job(build_name, repo, "Web interface")
+        dockergrader_queue.enqueue(job)
 
     return redirect(url_for("dashboard.builds_one", name=build_name))
 

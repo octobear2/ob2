@@ -8,9 +8,9 @@ from ob2.database.helpers import create_build
 from ob2.dockergrader import dockergrader_queue, Job
 from ob2.util.github_api import get_commit_message, get_diff_file_list
 from ob2.util.hooks import apply_filters
+from ob2.util.job_limiter import rate_limit_fail_build, should_limit_source
 
 blueprint = Blueprint("pushhook", __name__, template_folder="templates")
-
 
 @blueprint.route("/pushhook/", methods=["POST"])
 def pushhook():
@@ -65,9 +65,13 @@ def pushhook():
                     break
                 except apsw.Error:
                     logging.exception("Failed to create build, retrying...")
-            job = Job(build_name, repo_name, "GitHub push")
-            dockergrader_queue.enqueue(job)
+            if should_limit_source(repo_name):
+                rate_limit_fail_build(build_name)
+            else:
+                job = Job(build_name, repo_name, "GitHub push")
+                dockergrader_queue.enqueue(job)
         return ('', 204)
     except Exception:
         logging.exception("Error occurred while processing GitHub pushhook payload")
         abort(500)
+
