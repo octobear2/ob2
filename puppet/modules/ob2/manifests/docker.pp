@@ -8,7 +8,7 @@ class ob2::docker {
 
     service { "docker":
         ensure  => running,
-        require => Package["lxc-docker"];
+        require => Package["docker-ce"];
     }
 
     file { "/etc/apparmor.d/ob2docker":
@@ -21,7 +21,7 @@ class ob2::docker {
         command     => "apparmor_parser -r -T -W /etc/apparmor.d/ob2docker",
         refreshonly => true,
         user        => root,
-        require     => [File["/etc/apparmor.d/ob2docker"], Package["lxc-docker"]];
+        require     => [File["/etc/apparmor.d/ob2docker"], Package["docker-ce"]];
     }
 
 }
