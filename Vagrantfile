@@ -15,6 +15,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network "forwarded_port", guest: 5002, host: 5002, host_ip: "127.0.0.1"
   config.vm.hostname = "ob2-dev.eecs.berkeley.edu"
 
+  # Install Puppet in the VM
+  config.vm.provision "shell", path: "install_puppet.sh"
+
+  # Provision with Puppet
   config.vm.provision "puppet" do |puppet|
     puppet.manifests_path = "puppet/manifests"
     puppet.module_path    = "puppet/modules"
