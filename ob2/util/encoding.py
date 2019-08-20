@@ -4,8 +4,9 @@ def wrangle_to_unicode(text):
     in other places.
 
     """
-    try:
-        text = str(text).decode("utf-8")
-    except UnicodeDecodeError:
-        text = str(text).decode("latin-1")
+    if not isinstance(text, str):
+        try:
+            text = bytes(text).decode("utf-8")
+        except UnicodeDecodeError:
+            text = bytes(text).decode("latin-1")
     return text

@@ -572,8 +572,10 @@ def sql():
                     query_rows = []
 
                     def stringify(d):
-                        if isinstance(d, unicode):
+                        if isinstance(d, bytes):
                             return d.encode("utf-8")
+                        if isinstance(d, str):
+                            return d
                         # We want to display "0" here, because this is meant to be a direct
                         # connection to the database.
                         elif d is None:
