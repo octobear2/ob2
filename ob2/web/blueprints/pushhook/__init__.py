@@ -28,11 +28,11 @@ def pushhook():
         ref = payload["ref"]
         before = payload["before"]
         after = payload["after"]
-        assert isinstance(ref, basestring)
-        assert isinstance(before, basestring)
-        assert isinstance(after, basestring)
+        assert isinstance(ref, str)
+        assert isinstance(before, str)
+        assert isinstance(after, str)
         repo_name = payload["repository"]["name"]
-        assert isinstance(repo_name, basestring)
+        assert isinstance(repo_name, str)
         file_list = get_diff_file_list(repo_name, before, after)
         if not file_list:
             file_list = []
@@ -74,4 +74,3 @@ def pushhook():
     except Exception:
         logging.exception("Error occurred while processing GitHub pushhook payload")
         abort(500)
-

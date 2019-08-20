@@ -2,7 +2,7 @@ import apsw
 import binascii
 import csv
 import json
-import StringIO
+import io
 import traceback
 from collections import OrderedDict
 from flask import (Blueprint, Response, abort, flash, redirect, render_template, request, session,
@@ -179,7 +179,7 @@ def enter_grades_confirm():
                     try_add(f_student, f_score, f_slipunits)
 
             f_csv = request.form.get("f_csv", "")
-            for row in csv.reader(StringIO.StringIO(f_csv), delimiter=",", quotechar='"'):
+            for row in csv.reader(io.StringIO(f_csv), delimiter=",", quotechar='"'):
                 if len(row) != 3:
                     fail_validation("CSV rows must contain 3 entries")
                 try_add(*row)
@@ -218,7 +218,7 @@ def enter_grades_confirm():
                                        transaction_name, description, transaction_source,
                                        manual=True, dont_lower=False)
         if step == 1:
-            entries_csv = StringIO.StringIO()
+            entries_csv = io.StringIO()
             entries_csv_writer = csv.writer(entries_csv, delimiter=",", quotechar='"')
             for entry in entries:
                 entries_csv_writer.writerow(entry)
@@ -598,7 +598,7 @@ def sql():
             query_error = traceback.format_exc()
 
         if action == "export" and query_headers:
-            result_string = StringIO.StringIO()
+            result_string = io.StringIO()
             result_writer = csv.writer(result_string, delimiter=",", quotechar='"')
             result_writer.writerow([header_name for header_name, header_type in query_headers])
             if query_rows:
@@ -663,7 +663,7 @@ def export_one(name):
             return str(d)
 
     dataset = map(lambda data: map(stringify, data), dataset)
-    result_string = StringIO.StringIO()
+    result_string = io.StringIO()
     result_writer = csv.writer(result_string, delimiter=",", quotechar='"')
     if headers:
         result_writer.writerow(headers)

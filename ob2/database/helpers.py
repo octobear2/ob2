@@ -146,8 +146,8 @@ def get_valid_ambiguous_identifiers(c):
                                    for identifier in user if identifier])
     c.execute("SELECT distinct `group` FROM groupsusers")
     identifiers_counter.update([group for group, in c.fetchall() if group])
-    get_key = lambda(key, count): key
-    get_count = lambda(key, count): count
+    get_key = lambda keycount: keycount[0]
+    get_count = lambda keycount: keycount[1]
     valid_identifiers = map(get_key, filter(lambda i: get_count(i) == 1,
                                             identifiers_counter.viewitems()))
     ambiguous_identifiers = map(get_key, filter(lambda i: get_count(i) > 1,

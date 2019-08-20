@@ -7,7 +7,6 @@ python-dateutil
 pytz
 six
 tzlocal
-wsgiref
 docker-py
 requests[security]
 github3.py
@@ -23,3 +22,4 @@ pyparsing
 ipython
 ndg-httpsclient
 PyYaml
+apsw

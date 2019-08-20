@@ -34,9 +34,9 @@ def parse_time(s):
 
 def slip_units(due_date, submit_date):
     """Computes the number of slip units (see ob2.config) between the due date and submit_date."""
-    if isinstance(due_date, basestring):
+    if isinstance(due_date, str):
         due_date = parse_time(due_date)
-    if isinstance(submit_date, basestring):
+    if isinstance(submit_date, str):
         submit_date = parse_time(submit_date)
     lateness = submit_date - due_date
     total_seconds = lateness.total_seconds() - config.slip_grace_period
@@ -60,11 +60,11 @@ def now_compare(start_date, end_date=None):
     If end_date is ommitted, it takes the same value as start_date.
 
     """
-    if isinstance(start_date, basestring):
+    if isinstance(start_date, str):
         start_date = parse_time(start_date)
     if end_date is None:
         end_date = start_date
-    if isinstance(end_date, basestring):
+    if isinstance(end_date, str):
         end_date = parse_time(end_date)
     current_date = now()
     if current_date < start_date:
@@ -81,7 +81,7 @@ def parse_to_relative(target, past_relative_cutoff=86400, future_relative_cutoff
     or more than Z seconds in the future, then express TARGET in an absolute way.
 
     """
-    if isinstance(target, basestring):
+    if isinstance(target, str):
         target = parse_time(target)
     delta = now() - target
     total_seconds = delta.total_seconds()

@@ -48,9 +48,9 @@ node default {
   package {
     [
       "docker-ce",
-      "python-pip",
+      "python3-pip",
       "git",
-      "python-dev",
+      "python3-dev",
       "unzip",
       "libffi-dev",
       "libssl-dev",

@@ -78,7 +78,7 @@ def validate_config():
 
     for array_key in ["github_ta_usernames",
                       "github_webhook_secrets"]:
-        assert not isinstance(getattr(config, array_key), basestring)
+        assert not isinstance(getattr(config, array_key), str)
 
     # The port number should be ommitted if it is the default HTTP/HTTPS port.
     assert not config.web_public_host.endswith(":80")

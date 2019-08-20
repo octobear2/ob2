@@ -8,7 +8,7 @@ from ob2.util.time import now_str
 try:
     MAX_JOBS_ALLOWED = config.max_ongoing_jobs
     assert isinstance(MAX_JOBS_ALLOWED, int)
-except (KeyError, AssertionError):
+except (AttributeError, AssertionError):
     MAX_JOBS_ALLOWED = None
 
 def rate_limit_fail_build(build_name):

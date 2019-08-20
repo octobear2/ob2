@@ -10,17 +10,16 @@ Computer Science courses will always be TA'ed by talented computer programmers. 
 
 Here is the quickest way of getting started with ob2.
 
-1. Download Vagrant and VirtualBox
-1. Download a copy of ob2 and run `vagrant up` inside the project root
-1. Use `vagrant ssh` to log in to the virtual machine
+1. Download Vagrant and VirtualBox.
+1. Download a copy of ob2 and run `vagrant up` inside the project root.
+1. Use `vagrant ssh` to log in to the virtual machine.
 1. Run `sudo apt-get install linux-image-extra-$(uname -r)` and then **reboot the VM** with `vagrant reload`. If apt-get reported that the kernel extras package is already installed, you don't need to reboot.
-1. Create a new Python virtual environment with `virtualenv ./env`
-1. Activate the new virtual environment with `source ./env/bin/activate`
-1. The ob2 code is mounted inside the virtual machine at `~/src`, so enter the directory with `cd src/`
-1. Install the necessary Python packages with `pip install -r requirements.txt`
-1. The APSW python package is not available via PyPI, so build it manually by running `./build_apsw.sh`
-1. You can now start the ob2 server with `python -m ob2`
-1. When ob2 starts, it will try to initialize the database, so press 'y' and hit Enter to continue
+1. Create a new Python virtual environment with `python3 -m venv ./env`.
+1. Activate the new virtual environment with `source ./env/bin/activate`.
+1. The ob2 code is mounted inside the virtual machine at `~/src`, so enter the directory with `cd src/`.
+1. Install the necessary Python packages with `pip3 install -r requirements.txt`.
+1. You can now start the ob2 server with `python3 -m ob2`.
+1. When ob2 starts, it will try to initialize the database, so press 'y' and hit Enter to continue.
 1. The `Vagrantfile` bundled with ob2 should have forwarded port 5002 (the default web port) for you, so go to [localhost:5002](http://localhost:5002/) to access the ob2 web interface.
 
 At this point, you should have a working instance of ob2, but it will not be very useful. You won't be able to log in without GitHub OAuth tokens, and there won't be any jobs configured.

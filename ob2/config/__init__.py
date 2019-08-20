@@ -25,7 +25,7 @@ class _ConfigModule(object):
 
     def exec_custom_functions(self):
         for f in self._custom_functions_files:
-            execfile(f, {"__file__": f})
+            exec(open(f).read(), {"__file__": f})
 
     def _load_from_directory(self, directory):
         """
@@ -39,7 +39,7 @@ class _ConfigModule(object):
 
         try:
             with open(join(directory, "config.yaml")) as f:
-                config_dict = yaml.load(f.read())
+                config_dict = yaml.load(f.read(), yaml.FullLoader)
         except IOError:
             LOG.info("  -> No config.yaml found (skipping)")
         else:
@@ -62,7 +62,7 @@ class _ConfigModule(object):
                 elif key.endswith("_path"):
                     # Configuration options that end in "_path" are treated specially.
                     # Paths are relative to the config directory root.
-                    assert isinstance(value, basestring)
+                    assert isinstance(value, str)
                     value = abspath(join(directory, value))
 
                 if is_append:
@@ -94,7 +94,13 @@ class _ConfigModule(object):
             raise KeyError("No such configuration key: %s" % repr(key))
 
     def __getattr__(self, key):
-        return self._lookup(key)
+        # In Python3, importlib may try looking up attributes on this module.
+        # If they don't exist, we need to raise an AttributeError, not a
+        # KeyError.
+        try:
+            return self._lookup(key)
+        except KeyError as ke:
+            raise AttributeError(*ke.args)
 
 
 args = parse_args()
