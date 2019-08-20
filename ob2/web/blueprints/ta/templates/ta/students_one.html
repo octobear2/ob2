@@ -25,7 +25,7 @@
                 <td class="mdl-data-table__cell--non-numeric">Photo</td>
                 <td class="mdl-data-table__cell--non-numeric ob2-multiline-row">
                 {% if photo %}
-                    <img class="ob2-photo" src="data:image/jpeg;base64,{{ b2a_base64(photo) }}" />
+                    <img class="ob2-photo" src="data:image/jpeg;base64,{{ b2a_base64(photo).decode('utf-8') }}" />
                 {% else %}
                     None
                 {% endif %}

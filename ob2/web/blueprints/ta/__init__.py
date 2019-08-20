@@ -572,16 +572,14 @@ def sql():
                     query_rows = []
 
                     def stringify(d):
-                        if isinstance(d, bytes):
-                            return d.encode("utf-8")
                         if isinstance(d, str):
-                            return d
+                            return d.encode("utf-8")
                         # We want to display "0" here, because this is meant to be a direct
                         # connection to the database.
                         elif d is None:
-                            return ""
+                            return b""
                         else:
-                            return str(d)
+                            return bytes(d)
 
                     # We are not allowed to modify the query itself, so we're forced to truncate
                     # long lists of results with Python.
@@ -656,13 +654,14 @@ def export_one(name):
     headers, dataset = export_driver()
 
     def stringify(d):
-        if isinstance(d, unicode):
+        if isinstance(d, str):
             return d.encode("utf-8")
-        # We do NOT Want To Display "0" Here, Because It Just Adds Confusion To Spreadsheets.
-        elif not d:
-            return ""
+        # We want to display "0" here, because this is meant to be a direct
+        # connection to the database.
+        elif d is None:
+            return b""
         else:
-            return str(d)
+            return bytes(d)
 
     dataset = map(lambda data: map(stringify, data), dataset)
     result_string = io.StringIO()

@@ -93,7 +93,7 @@ class Worker(object):
             job_handler = get_job(job_name)
             log, score = job_handler(source, commit)
             # Ignore any special encoding inside the log, and just treat it as a bytes
-            log = buffer(log)
+            log = bytes(log)
             min_score, max_score = assignment.min_score, assignment.max_score
             full_score = assignment.full_score
             if score < min_score or score > max_score:

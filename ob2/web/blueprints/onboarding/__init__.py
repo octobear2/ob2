@@ -229,7 +229,7 @@ if config.student_photos_enabled:
                     fail_validation("No photo submitted. Please choose a photo.")
                 if not photo_base64.startswith(photo_prefix):
                     fail_validation("Unrecognized photo format. (Potential autograder bug?)")
-                photo_binary = buffer(binascii.a2b_base64(photo_base64[len(photo_prefix):]))
+                photo_binary = binascii.a2b_base64(photo_base64[len(photo_prefix):])
                 if len(photo_binary) > 2**21:
                     fail_validation("Photo exceeds maximum allowed size (2MiB).")
                 c.execute("UPDATE users SET photo = ? WHERE id = ?", [photo_binary, user_id])

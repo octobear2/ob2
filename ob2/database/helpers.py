@@ -168,7 +168,7 @@ def get_photo(c, user_id):
     c.execute("SELECT photo FROM users WHERE id = ?", [user_id])
     try:
         photo, = c.fetchone()
-        return memoryview(photo)
+        return photo
     except TypeError:
         pass
 
