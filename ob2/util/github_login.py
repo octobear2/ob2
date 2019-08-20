@@ -30,7 +30,7 @@ def get_authentication_provider_url(redirect_uri):
         state = generate_shitty_random_string()
         session["authentication_oauth_state"] = state
 
-        return "%s?%s" % (authorize_url, urllib.urlencode({
+        return "%s?%s" % (authorize_url, urllib.parse.urlencode({
             "client_id": config.github_oauth_consumer_key,
             "redirect_uri": redirect_uri,
             "state": state}))
