@@ -553,6 +553,12 @@ def gradeslog_one(name):
                            full_score=full_score,
                            **_template_common())
 
+def stringify(d):
+    if isinstance(d, bytes):
+        return d.decode("utf-8", "backslashreplace")
+    if d is None:
+        return ""
+    return str(d)
 
 @blueprint.route("/ta/sql/", methods=["GET", "POST"])
 @_require_ta
@@ -570,16 +576,6 @@ def sql():
                 with DbCursor(read_only=True) as c:
                     c.execute(query)
                     query_rows = []
-
-                    def stringify(d):
-                        if isinstance(d, str):
-                            return d.encode("utf-8")
-                        # We want to display "0" here, because this is meant to be a direct
-                        # connection to the database.
-                        elif d is None:
-                            return b""
-                        else:
-                            return bytes(d)
 
                     # We are not allowed to modify the query itself, so we're forced to truncate
                     # long lists of results with Python.
@@ -652,16 +648,6 @@ def export_one(name):
     if not export_driver:
         abort(404)
     headers, dataset = export_driver()
-
-    def stringify(d):
-        if isinstance(d, str):
-            return d.encode("utf-8")
-        # We want to display "0" here, because this is meant to be a direct
-        # connection to the database.
-        elif d is None:
-            return b""
-        else:
-            return bytes(d)
 
     dataset = map(lambda data: map(stringify, data), dataset)
     result_string = io.StringIO()

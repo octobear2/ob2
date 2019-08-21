@@ -58,7 +58,7 @@ def extract_repository(container, archive_path, destination_path, user=None):
                                    fi
                                fi
                             """.format(bash_quote(archive_path), bash_quote(destination_path)))
-    if result != "pass":
+    if result != b"pass":
         raise JobFailedError("I tried to extract your code from GitHub, but was unable to do " +
                              "so. Someone should probably investigate this.")
     if user:
@@ -73,14 +73,14 @@ def take_ownership(container, path, user, group=None):
                                    echo -n "pass"
                                fi
                             """ % (bash_quote(user), bash_quote(group), bash_quote(path)))
-    if result != "pass":
+    if result != b"pass":
         raise JobFailedError("I tried taking ownership of this directory, but it didn't work. " +
                              "This probably means there's a programming error.")
 
 
 def ensure_no_binaries(container, path, whitelist=[]):
     # This command should NOT follow symbolic links.
-    ignores = " ".join(["! -path %s"] * len(whitelist)) % map(bash_quote, whitelist)
+    ignores = " ".join(["! -path %s"] * len(whitelist)) % tuple(map(bash_quote, whitelist))
     find_payload = 'file -i "$0" | egrep -q "x-(sharedlib|object|executable); charset=binary"'
     result = container.bash(r"""cd %s
                                 find . -type f ! -empty %s -exec sh -c %s {} \; -print
@@ -99,10 +99,10 @@ def ensure_files_exist(container, path, files):
     """
     file_paths = container.bash("cd %s ; find . -type f -print0" % bash_quote(path))
     files = set(files)
-    for file_path in file_paths.split("\0"):
+    for file_path in file_paths.split(b"\0"):
         if file_path:
             # There's a trailing null-byte at the end of the output (probably?)
-            files.discard(file_path)
+            files.discard(file_path.decode("utf-8"))
     if files:
         raise JobFailedError("All of the following files are REQUIRED to be present in your " +
                              "code, but I didn't find some of them. Please verify that each " +
@@ -193,7 +193,7 @@ def safe_get_results(output_file_path, score_file_path):
     """
     output = None
     try:
-        with open(output_file_path) as output_file, \
+        with open(output_file_path, "rb") as output_file, \
                 open(score_file_path) as score_file:
             output = output_file.read(512*1024)
             score = score_file.read(128)

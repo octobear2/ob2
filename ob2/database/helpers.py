@@ -149,9 +149,9 @@ def get_valid_ambiguous_identifiers(c):
     get_key = lambda keycount: keycount[0]
     get_count = lambda keycount: keycount[1]
     valid_identifiers = map(get_key, filter(lambda i: get_count(i) == 1,
-                                            identifiers_counter.viewitems()))
+                                            identifiers_counter.items()))
     ambiguous_identifiers = map(get_key, filter(lambda i: get_count(i) > 1,
-                                                identifiers_counter.viewitems()))
+                                                identifiers_counter.items()))
     return valid_identifiers, ambiguous_identifiers
 
 
