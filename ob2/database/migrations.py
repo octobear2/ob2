@@ -23,11 +23,11 @@ def migrate():
                                         "not connected to an actual human.\n"
                                         "Please run the database migration interactively, and "
                                         "I'll never demand your attention again.")
-            response = raw_input("Looks like the database db.sqlite3 hasn't been set up yet.\n" +
-                                 "Set it up now? [Yn] ")
+            response = input("Looks like the database db.sqlite3 hasn't been set up yet.\n" +
+                             "Set it up now? [Yn] ")
             if "yes"[:len(response)] != response.lower():
                 sys.exit(0)
-            print "Running initial migration"
+            print("Running initial migration")
             c.execute('''CREATE TABLE options (
                          key TEXT PRIMARY KEY, value TEXT)''')
             c.execute("INSERT INTO options (key, value) VALUES ('schema_version', '1')")
@@ -35,7 +35,7 @@ def migrate():
 
         # Migration 2: Create users table
         if schema_version == "1":
-            print "Running migration 2: Create users table"
+            print("Running migration 2: Create users table")
             c.execute('''CREATE TABLE users (
                          id INT PRIMARY KEY, name TEXT, sid TEXT, login TEXT, github TEXT,
                          email TEXT, super INT, grouplimit INT)''')
@@ -44,7 +44,7 @@ def migrate():
 
         # Migration 3: Create grades and gradeslog tables
         if schema_version == "2":
-            print "Running migration 3: Create grades and gradeslog table"
+            print("Running migration 3: Create grades and gradeslog table")
             c.execute('''CREATE TABLE gradeslog (
                          transaction_name TEXT, description TEXT, source TEXT, updated TEXT,
                          user INT, assignment TEXT, score REAL, slipunits INT)''')
@@ -56,7 +56,7 @@ def migrate():
 
         # Migration 4: Create builds table
         if schema_version == "3":
-            print "Running migration 4: Create builds table"
+            print("Running migration 4: Create builds table")
             c.execute('''CREATE TABLE builds (
                          build_name TEXT, source TEXT, `commit` TEXT, message TEXT, job TEXT,
                          status INT, score REAL, started TEXT, updated TEXT, log TEXT)''')
@@ -65,7 +65,7 @@ def migrate():
 
         # Migration 5: Create repomanager table
         if schema_version == "4":
-            print "Running migration 5: Create repomanager table"
+            print("Running migration 5: Create repomanager table")
             c.execute('''CREATE TABLE repomanager (id INT PRIMARY KEY, operation TEXT,
                          payload TEXT, updated TEXT, completed INT)''')
             c.execute("UPDATE options SET value = '5' WHERE key = 'schema_version'")
@@ -73,7 +73,7 @@ def migrate():
 
         # Migration 6: Create groupsusers table
         if schema_version == "5":
-            print "Running migration 6: Create groupsusers table"
+            print("Running migration 6: Create groupsusers table")
             c.execute('''CREATE TABLE groupsusers (user INT, `group` TEXT,
                                                    PRIMARY KEY(user, `group`))''')
             c.execute("UPDATE options SET value = '6' WHERE key = 'schema_version'")
@@ -81,7 +81,7 @@ def migrate():
 
         # Migration 7: Create invitations table
         if schema_version == "6":
-            print "Running migration 7: Create invitations table"
+            print("Running migration 7: Create invitations table")
             c.execute('''CREATE TABLE invitations (
                          invitation_id INT, user INT, status INT,
                          PRIMARY KEY(invitation_id, user))''')
@@ -90,7 +90,7 @@ def migrate():
 
         # Migration 8: Create mailerqueue table
         if schema_version == "7":
-            print "Running migration 8: Create mailerqueue table"
+            print("Running migration 8: Create mailerqueue table")
             c.execute('''CREATE TABLE mailerqueue (id INT PRIMARY KEY, operation TEXT,
                          payload TEXT, updated TEXT, completed INT)''')
             c.execute("UPDATE options SET value = '8' WHERE key = 'schema_version'")
@@ -98,7 +98,7 @@ def migrate():
 
         # Migration 9: Add 'photo' field to users
         if schema_version == "8":
-            print "Running migration 9: Add 'photo' field to users"
+            print("Running migration 9: Add 'photo' field to users")
             c.execute("ALTER TABLE users ADD COLUMN photo BLOB;")
             c.execute("UPDATE options SET value = '9' WHERE key = 'schema_version'")
             schema_version = "9"

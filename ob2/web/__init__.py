@@ -1,5 +1,5 @@
 import sys
-from cherrypy import wsgiserver
+from cheroot import wsgi
 from flask import (
     abort,
     Flask,
@@ -87,8 +87,8 @@ def main():
         app.run(config.web_host, config.web_port, debug=True, use_reloader=False, use_debugger=True,
                 threaded=True)
     elif server_type == "cherrypy":
-        dispatcher = wsgiserver.WSGIPathInfoDispatcher({"/": app})
-        web_server = wsgiserver.CherryPyWSGIServer((config.web_host, config.web_port),
+        dispatcher = wsgi.PathInfoDispatcher({"/": app})
+        web_server = wsgi.Server((config.web_host, config.web_port),
                                                    dispatcher,
                                                    server_name=config.web_public_host)
         web_server.start()

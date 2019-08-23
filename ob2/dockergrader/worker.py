@@ -92,8 +92,7 @@ class Worker(object):
             due_date = assignment.due_date
             job_handler = get_job(job_name)
             log, score = job_handler(source, commit)
-            # Ignore any special encoding inside the log, and just treat it as a bytes
-            log = buffer(log)
+            # log is of type 'bytes'
             min_score, max_score = assignment.min_score, assignment.max_score
             full_score = assignment.full_score
             if score < min_score or score > max_score:

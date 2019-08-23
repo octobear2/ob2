@@ -5,7 +5,4 @@
 *.swp
 *.pyc
 
-/apsw-*/
-/apsw.zip
-
 .idea

@@ -8,7 +8,7 @@ def validate_packages():
     import errors.
 
     """
-    assert sys.version_info[:2] == (2, 7), "Please use Python 2.7"
+    #assert sys.version_info[:2] == (2, 7), "Please use Python 2.7"
 
     try:
         import apsw

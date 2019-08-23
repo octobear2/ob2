@@ -17,7 +17,7 @@ node default {
 
   user { $user:
     groups  => ["docker"],
-    require => Package[lxc-docker];
+    require => Package[docker-ce];
   }
 
   # Configure apt
@@ -29,13 +29,13 @@ node default {
   }
 
   apt::source { "docker":
-    location => "https://get.docker.io/ubuntu",
-    release  => docker,
-    repos    => main,
-    before   => Package[lxc-docker],
+    location => "https://download.docker.com/linux/ubuntu",
+    release  => bionic,
+    repos    => stable,
+    before   => Package[docker-ce],
     key      => {
-      id     => "36A1D7869245C8950F966E92D8576A8BA88D21E9",
-      server => "keyserver.ubuntu.com",
+      id     => "9DC858229FC7DD38854AE2D88D81803C0EBFCD88",
+      source => "https://download.docker.com/linux/ubuntu/gpg",
     },
   }
 
@@ -47,10 +47,10 @@ node default {
 
   package {
     [
-      "lxc-docker",
-      "python-pip",
+      "docker-ce",
+      "python3-pip",
       "git",
-      "python-dev",
+      "python3-dev",
       "unzip",
       "libffi-dev",
       "libssl-dev",

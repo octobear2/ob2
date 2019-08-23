@@ -3,7 +3,7 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # VirtualBox
-  config.vm.box = "ubuntu/trusty64"
+  config.vm.box = "ubuntu/bionic64"
   config.vm.network "private_network", ip: "192.168.162.42"
   puppet_version = 3
 
@@ -15,6 +15,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network "forwarded_port", guest: 5002, host: 5002, host_ip: "127.0.0.1"
   config.vm.hostname = "ob2-dev.eecs.berkeley.edu"
 
+  # Install Puppet in the VM
+  config.vm.provision "shell", path: "install_puppet.sh"
+
+  # Provision with Puppet
   config.vm.provision "puppet" do |puppet|
     puppet.manifests_path = "puppet/manifests"
     puppet.module_path    = "puppet/modules"

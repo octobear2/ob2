@@ -7,10 +7,19 @@ python-dateutil
 pytz
 six
 tzlocal
-wsgiref
 docker-py
 requests[security]
-github3.py
+
+# samkumar: The reason I've pinned version 0.9.6 is because version 1.0.0
+# introduces a bug where the library requires an OAuth scope granting access
+# to private user profile information even for library calls necessary to see
+# public information (in particular, to obtain username from a token). For
+# details, see https://github.com/sigmavirus24/github3.py/issues/797 and
+# https://github.com/sigmavirus24/github3.py/pull/911. Once the maintainers of
+# the library merge the pull request and publish a release with that fix, we
+# should be able to upgrade.
+github3.py==0.9.6
+
 pytest
 unittest2
 mock
@@ -23,3 +32,4 @@ pyparsing
 ipython
 ndg-httpsclient
 PyYaml
+apsw

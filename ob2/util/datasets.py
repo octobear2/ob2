@@ -67,7 +67,7 @@ class Datasets(object):
         def factorize(n):
             for candidate in range(2, n):
                 if n % candidate == 0:
-                    return [candidate] + factorize(n / candidate)
+                    return [candidate] + factorize(n // candidate)
             return [n]
 
         if bin_range <= max_bins:
@@ -131,8 +131,8 @@ class Datasets(object):
         builds = [(source, score, parse_time(started)) for source, score, started in c.fetchall()]
         if not builds:
             return []
-        source_set = map(lambda b: b[0], builds)
-        started_time_set = map(lambda b: b[2], builds)
+        source_set = tuple(map(lambda b: b[0], builds))
+        started_time_set = tuple(map(lambda b: b[2], builds))
         min_started = min(started_time_set)
         max_started = max(started_time_set)
         assignment_min_started = parse_time(assignment.not_visible_before)
@@ -145,13 +145,13 @@ class Datasets(object):
         current_time = data_min
         for source, score, started_time in builds:
             while current_time < started_time:
-                percentiles = np.percentile(best_scores_so_far.values(), data_keys)
+                percentiles = np.percentile(tuple(best_scores_so_far.values()), data_keys)
                 data_points.append([format_js_compatible_time(current_time)] + list(percentiles))
                 current_time += time_delta
             if score is not None:
                 best_scores_so_far[source] = max(score, best_scores_so_far[source])
 
-        percentiles = list(np.percentile(best_scores_so_far.values(), data_keys))
+        percentiles = list(np.percentile(tuple(best_scores_so_far.values()), data_keys))
         now_time = now()
         while current_time - (time_delta / 2) < data_max:
             data_points.append([format_js_compatible_time(current_time)] + percentiles)

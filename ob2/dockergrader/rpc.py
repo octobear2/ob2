@@ -43,7 +43,7 @@ class DockerClient(object):
                                     for local_path, remote_path in volumes.items()}
         if config.dockergrader_apparmor_profile:
             host_config["security_opt"] = ["apparmor:%s" % config.dockergrader_apparmor_profile]
-        volumes_list = volumes.values()
+        volumes_list = list(volumes.values())
         container = self.client.create_container(image=image, command="/bin/bash", tty=True,
                                                  labels=labels, volumes=volumes_list,
                                                  host_config=create_host_config(**host_config))

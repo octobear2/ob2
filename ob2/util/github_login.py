@@ -1,7 +1,7 @@
 import github3
 import requests
 import urllib
-import urlparse
+import urllib.parse
 from flask import session
 
 import ob2.config as config
@@ -30,7 +30,7 @@ def get_authentication_provider_url(redirect_uri):
         state = generate_shitty_random_string()
         session["authentication_oauth_state"] = state
 
-        return "%s?%s" % (authorize_url, urllib.urlencode({
+        return "%s?%s" % (authorize_url, urllib.parse.urlencode({
             "client_id": config.github_oauth_consumer_key,
             "redirect_uri": redirect_uri,
             "state": state}))
@@ -45,7 +45,7 @@ def authentication_provider_get_token(code, state):
                                    "code": code})
     if response.status_code != 200:
         raise AuthenticationTemporaryError("Failed to get OAuth api token from GitHub")
-    response_dict = dict(urlparse.parse_qsl(response.text))
+    response_dict = dict(urllib.parse.parse_qsl(response.text))
     if "access_token" not in response_dict:
         raise AuthenticationTemporaryError("GitHub OAuth response did not contain access_token")
 

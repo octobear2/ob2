@@ -21,6 +21,10 @@ def student_roster_with_grades():
                     for student in c.fetchall()]
         c.execute("SELECT user, assignment, score, slipunits FROM grades")
         grades = c.fetchall()
+
+    dataset = students
+    headers = ["Database ID", "Name", "SID", "Login", "GitHub Username", "Email", "Staff"]
+
     if students:
         student_index = {student[0]: student for student in students}
         offset = len(students[0]) - 2 * len(config.assignments)
@@ -34,8 +38,6 @@ def student_roster_with_grades():
             if slipunits is None:
                 slipunits = 0
             student_index[user][index + 1] = slipunits
-        dataset = students
-        headers = ["Database ID", "Name", "SID", "Login", "GitHub Username", "Email", "Staff"]
         for assignment in config.assignments:
             headers += ["%s grade" % assignment.name,
                         "%s slip %s" % (assignment.name, config.slip_unit_name_plural)]
