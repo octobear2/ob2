@@ -19,7 +19,7 @@ def get_request_validity():
     if github_signature:
         payload_bytes = request.get_data()
         for github_webhook_secret in config.github_webhook_secrets:
-            digest = hmac.new(github_webhook_secret, payload_bytes, sha1).hexdigest()
+            digest = hmac.new(github_webhook_secret.encode("utf-8"), payload_bytes, sha1).hexdigest()
             expected_signature = "sha1=%s" % digest
             if expected_signature == github_signature:
                 return True
