@@ -5,7 +5,7 @@ import urllib.parse
 from flask import session
 
 import ob2.config as config
-from ob2.util.security import generate_shitty_random_string
+from ob2.util.security import generate_secure_random_string
 
 github_oauth_url = "https://github.com/login/oauth"
 access_token_url = github_oauth_url + "/access_token"
@@ -27,7 +27,7 @@ class AuthenticationIntegrityError(AuthenticationError):
 
 def get_authentication_provider_url(redirect_uri):
     if config.github_oauth_consumer_key:
-        state = generate_shitty_random_string()
+        state = generate_secure_random_string()
         session["authentication_oauth_state"] = state
 
         return "%s?%s" % (authorize_url, urllib.parse.urlencode({

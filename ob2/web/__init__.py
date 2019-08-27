@@ -14,7 +14,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 import ob2.config as config
 import ob2.mailer as mailer
 from ob2.util.authentication import user_id
-from ob2.util.security import generate_shitty_random_string, get_request_validity
+from ob2.util.security import generate_secure_random_string, get_request_validity
 from ob2.util.github_login import is_ta
 from ob2.util.templating import JINJA_EXPORTS
 
@@ -36,7 +36,7 @@ app.jinja_env.globals.update(JINJA_EXPORTS)
 # would create a cyclic import dependency.
 mailer.register_app(app)
 
-cache_buster_hash = generate_shitty_random_string(8)
+cache_buster_hash = generate_secure_random_string(8)
 
 
 for blueprint in ("onboarding",

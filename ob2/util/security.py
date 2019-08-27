@@ -1,6 +1,6 @@
 import hmac
+import secrets
 import string
-import random
 from flask import abort, request, session
 from functools import wraps
 from hashlib import sha1
@@ -8,9 +8,8 @@ from hashlib import sha1
 import ob2.config as config
 
 
-# plz no
-def generate_shitty_random_string(N=30):
-    return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(N))
+def generate_secure_random_string(N=30):
+    return ''.join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(N))
 
 
 def get_request_validity():
@@ -33,7 +32,7 @@ def get_request_validity():
 
 def generate_csrf_token():
     if "_csrf_token" not in session:
-        session["_csrf_token"] = generate_shitty_random_string()
+        session["_csrf_token"] = generate_secure_random_string()
     return session["_csrf_token"]
 
 
