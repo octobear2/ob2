@@ -156,6 +156,17 @@ web_server_type:
 # SSL termination for ob2 in production.
 web_behind_proxy: false
 
+# These three fields are only used if web_behind_proxy is true.
+# These settings are true for nginx, but if you're using a different proxy (or even a future version
+# of nginx!), review these settings --- check if proxy provides Host, X-Forwarded-For, and
+# X-Forwarded-Proto headers, respectively, and only set these to true if they do. If they don't set
+# one (or more) of these headers but you set the corresponding value (or values) to true, then a
+# malicious client could set the header and the server will trust it, which is a security
+# vulnerability.
+web_proxy_forwards_host: true
+web_proxy_forwards_for: true
+web_proxy_forwards_proto: true
+
 # The list of assignments in the autograder.
 #
 # - If an assignment is "manual_grading=True", then some of the fields are not required. Otherwise,

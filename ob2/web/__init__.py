@@ -9,7 +9,7 @@ from flask import (
 )
 from importlib import import_module
 from logging import StreamHandler
-from werkzeug.contrib.fixers import ProxyFix
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 import ob2.config as config
 import ob2.mailer as mailer
@@ -20,7 +20,10 @@ from ob2.util.templating import JINJA_EXPORTS
 
 app = Flask("ob2.web", static_url_path=("%s/static" % config.web_public_root))
 if config.web_behind_proxy:
-    app.wsgi_app = ProxyFix(app.wsgi_app)
+    count_proxies_forwards_host = 1 if config.web_proxy_forwards_host else 0
+    count_proxies_forwards_for = 1 if config.web_proxy_forwards_for else 0
+    count_proxies_forwards_proto = 1 if config.web_proxy_forwards_proto else 0
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_host=count_proxies_forwards_host, x_for=count_proxies_forwards_for, x_proto=count_proxies_forwards_proto)
 app.logger.addHandler(StreamHandler(sys.stdout))
 app.debug = config.debug_mode
 app.config["SESSION_COOKIE_PATH"] = config.web_public_root + "/"
