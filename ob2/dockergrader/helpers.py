@@ -85,7 +85,7 @@ def ensure_no_binaries(container, path, whitelist=[]):
     result = container.bash(r"""cd %s
                                 find . -type f ! -empty %s -exec sh -c %s {} \; -print
                              """ % (bash_quote(path), ignores, bash_quote(find_payload)))
-    binaries = result.strip()
+    binaries = result.decode("utf-8").strip()
     if binaries:
         raise JobFailedError("I found some binary files in your code. Please remove the " +
                              "following files before we continue:\n\n" + binaries)
