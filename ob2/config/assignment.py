@@ -14,7 +14,8 @@ class Assignment(object):
               ("start_auto_building", str),
               ("end_auto_building", str),
               ("due_date", str),
-              ("cannot_build_after", str)]
+              ("cannot_build_after", str),
+              ("build_exceptions", dict)]
 
     _index_by_key = {key: index for index, (key, _) in enumerate(schema)}
 
@@ -39,6 +40,14 @@ class Assignment(object):
         parse_time = DateParser.parse
         not_visible_before = parse_time(self.not_visible_before)
         parse_time(self.due_date)
+        if self.exception_policy is not None:
+            for _, policy in self.exception_policy.items():
+                if "start" in policy:
+                    parse_time(policy["start"])
+                if "end" in policy:
+                    parse_time(policy["end"])
+
+        # Make sure dates are in the correct order
         if not self.manual_grading:
             start_auto_building = parse_time(self.start_auto_building)
             end_auto_building = parse_time(self.end_auto_building)

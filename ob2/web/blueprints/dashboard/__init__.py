@@ -20,6 +20,7 @@ from ob2.database.helpers import (
 from ob2.dockergrader import dockergrader_queue, Job
 from ob2.mailer import create_email, mailer_queue
 from ob2.repomanager import repomanager_queue
+from ob2.util.assignments import has_build_exception
 from ob2.util.authentication import user_id
 from ob2.util.config_data import get_assignment_by_name
 from ob2.util.datasets import Datasets
@@ -72,14 +73,18 @@ def index():
 @_require_login
 def assignments():
     with DbCursor() as c:
+        student = _get_student(c)
+        user_id, _, _, login, _, _ = student
         c.execute("SELECT assignment, score, slipunits, updated FROM grades WHERE user = ?",
-                  [user_id()])
+                  [user_id])
         grade_info = {assignment: (score, slipunits, updated)
                       for assignment, score, slipunits, updated in c.fetchall()}
         template_common = _template_common(c)
-    assignments_info = [(a.name, a.full_score, a.weight, a.due_date) +
-                        grade_info.get(a.name, (None, None, None))
-                        for a in config.assignments if now_compare(a.not_visible_before) >= 0]
+    assignments_info = []
+    for a in config.assignments:
+        if now_compare(a.not_visible_before) >= 0 or has_build_exception(a, login):
+            assignments_info.append((a.name, a.full_score, a.weight, a.due_date) +
+                        grade_info.get(a.name, (None, None, None)))
     return render_template("dashboard/assignments.html",
                            assignments_info=assignments_info,
                            **template_common)
@@ -102,6 +107,10 @@ def assignments_one(name):
             can_build = False
         else:
             can_build = now_compare(assignment.cannot_build_after) <= 0
+
+        if has_build_exception(assignment, login):
+            can_build = True
+            is_visible = True
 
         if not is_visible:
             abort(404)
@@ -233,8 +242,6 @@ def build_now():
         abort(400)
     if assignment.manual_grading:
         abort(400)
-    if now_compare(assignment.not_visible_before, assignment.cannot_build_after) != 0:
-        abort(400)
 
     with DbCursor() as c:
         student = _get_student(c)
@@ -246,6 +253,10 @@ def build_now():
 
         if repo not in repos:
             abort(403)
+
+    if now_compare(assignment.not_visible_before, assignment.cannot_build_after) != 0:
+        if not has_build_exception(assignment, login):
+            abort(400)
 
     branch_hash = get_branch_hash(repo, "master")
     message = None
