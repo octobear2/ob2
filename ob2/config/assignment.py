@@ -40,8 +40,8 @@ class Assignment(object):
         parse_time = DateParser.parse
         not_visible_before = parse_time(self.not_visible_before)
         parse_time(self.due_date)
-        if self.exception_policy is not None:
-            for _, policy in self.exception_policy.items():
+        if self.build_exceptions is not None:
+            for _, policy in self.build_exceptions.items():
                 if "start" in policy:
                     parse_time(policy["start"])
                 if "end" in policy:

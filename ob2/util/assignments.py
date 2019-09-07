@@ -16,7 +16,7 @@ def has_build_exception(assignment, login):
     Returns True if the login has a build exception for the given assignment.
     Build exceptions allow the user to build even after the cannot_build_after deadline.
     """
-    build_exceptions = assignment.build_exception
+    build_exceptions = assignment.build_exceptions
     if build_exceptions is None:
         return False
     if login in build_exceptions:
