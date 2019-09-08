@@ -120,7 +120,7 @@ def ensure_files_match(container, path, file_checksums):
     """
     actual_sums = {}
     actual_sum_bytes = container.bash("cd %s ; find . -type f -print0 | xargs -0 sha1sum" %
-                                      bash_quote(path))
+                                      bash_quote(path)).decode("utf-8", "backslashreplace")
     actual_sum_line_matcher = re.compile(r"^(?P<checksum>[\da-fA-F]+)[ \t](?P<mode>[ *?^])" +
                                          r"(?P<name>[^\0]*)")
     for actual_sum_line in actual_sum_bytes.split("\n"):
