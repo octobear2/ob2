@@ -74,17 +74,20 @@ def assignments():
     with DbCursor() as c:
         student = _get_student(c)
         user_id, _, _, login, _, _ = student
+        super_value = get_super(c, user_id)
+        dropped = super_value is not None and super_value < 0
         c.execute("SELECT assignment, score, slipunits, updated FROM grades WHERE user = ?",
                   [user_id])
         grade_info = {assignment: (score, slipunits, updated)
                       for assignment, score, slipunits, updated in c.fetchall()}
         template_common = _template_common(c)
     assignments_info = []
-    for assignment in config.assignments:
-        a = assignment.student_view(login)
-        if now_compare(a.not_visible_before) >= 0:
-            assignments_info.append((a.name, a.full_score, a.weight, a.due_date) +
-                        grade_info.get(a.name, (None, None, None)))
+    if not dropped:
+        for assignment in config.assignments:
+            a = assignment.student_view(login)
+            if now_compare(a.not_visible_before) >= 0:
+                assignments_info.append((a.name, a.full_score, a.weight, a.due_date) +
+                            grade_info.get(a.name, (None, None, None)))
     return render_template("dashboard/assignments.html",
                            assignments_info=assignments_info,
                            **template_common)
@@ -97,6 +100,8 @@ def assignments_one(name):
         student = _get_student(c)
         user_id, _, _, login, _, _ = student
         assignment = get_assignment_by_name(name)
+        super_value = get_super(c, user_id)
+        dropped = super_value is not None and super_value < 0
 
         if not assignment:
             abort(404)
@@ -104,7 +109,7 @@ def assignments_one(name):
         assignment = assignment.student_view(login)
 
         slipunits_now = slip_units_now(assignment.due_date)
-        is_visible = now_compare(assignment.not_visible_before) >= 0
+        is_visible = now_compare(assignment.not_visible_before) >= 0 and not dropped
         if assignment.manual_grading:
             can_build = False
         else:
@@ -245,6 +250,8 @@ def build_now():
     with DbCursor() as c:
         student = _get_student(c)
         user_id, _, _, login, _, _ = student
+        super_value = get_super(c, user_id)
+        dropped = super_value is not None and super_value < 0
         if assignment.is_group:
             repos = get_groups(c, user_id)
         else:
@@ -253,7 +260,7 @@ def build_now():
         if repo not in repos:
             abort(403)
 
-    if now_compare(assignment.not_visible_before, assignment.cannot_build_after) != 0:
+    if now_compare(assignment.not_visible_before, assignment.cannot_build_after) != 0 or dropped:
         abort(400)
 
     branch_hash = get_branch_hash(repo, "master")
@@ -351,6 +358,12 @@ def group_respond():
                 fail_validation("Expected a response (probably a programming error)")
             student = _get_student(c)
             user_id, _, _, _, _, _ = student
+
+            super_value = get_super(c, user_id)
+            dropped = super_value is not None and super_value < 0
+            if dropped:
+                fail_validation("You are no longer enrolled in the class")
+
             c.execute('''SELECT status FROM invitations WHERE invitation_id = ? AND user = ?''',
                       [invitation_id, user_id])
             statuses = c.fetchall()
@@ -415,6 +428,12 @@ def group_create():
         with DbCursor() as c:
             student = _get_student(c)
             inviter_user_id, inviter_name, _, _, inviter_github, _ = student
+
+            super_value = get_super(c, inviter_user_id)
+            dropped = super_value is not None and super_value < 0
+            if dropped:
+                fail_validation("You are no longer enrolled in the class")
+
             grouplimit = get_grouplimit(c, inviter_user_id)
             if grouplimit < 1:
                 fail_validation("You are in too many groups already")
