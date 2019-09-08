@@ -15,6 +15,7 @@ from ob2.database.helpers import (
     get_next_autoincrementing_value,
     get_user_by_id,
     get_user_by_github,
+    get_super,
     modify_grouplimit,
 )
 from ob2.dockergrader import dockergrader_queue, Job
