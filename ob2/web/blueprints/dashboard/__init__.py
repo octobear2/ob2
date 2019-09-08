@@ -454,8 +454,11 @@ def group_create():
                 invitation_user_ids.add(invitee_id)
                 invitees.append(invitee)
             if not config.group_min_size <= len(invitation_user_ids) + 1 <= config.group_max_size:
-                fail_validation("You need between %d and %d people in your group" % (
-                    config.group_min_size, config.group_max_size))
+                if config.group_min_size == config.group_max_size:
+                    fail_validation("You need exactly %d people in your group" % config.group_min_size)
+                else:
+                    fail_validation("You need between %d and %d people in your group" % (
+                        config.group_min_size, config.group_max_size))
             if config.mailer_enabled:
                 for _, invitee_name, _, _, _, invitee_email in invitees:
                     email_payload = create_email("group_invite", invitee_email,
