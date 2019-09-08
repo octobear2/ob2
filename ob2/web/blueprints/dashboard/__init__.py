@@ -20,7 +20,6 @@ from ob2.database.helpers import (
 from ob2.dockergrader import dockergrader_queue, Job
 from ob2.mailer import create_email, mailer_queue
 from ob2.repomanager import repomanager_queue
-from ob2.util.assignments import has_build_exception
 from ob2.util.authentication import user_id
 from ob2.util.config_data import get_assignment_by_name
 from ob2.util.datasets import Datasets
@@ -81,8 +80,9 @@ def assignments():
                       for assignment, score, slipunits, updated in c.fetchall()}
         template_common = _template_common(c)
     assignments_info = []
-    for a in config.assignments:
-        if now_compare(a.not_visible_before) >= 0 or has_build_exception(a, login):
+    for assignment in config.assignments:
+        a = assignment.student_view(login)
+        if now_compare(a.not_visible_before) >= 0:
             assignments_info.append((a.name, a.full_score, a.weight, a.due_date) +
                         grade_info.get(a.name, (None, None, None)))
     return render_template("dashboard/assignments.html",
@@ -101,16 +101,14 @@ def assignments_one(name):
         if not assignment:
             abort(404)
 
+        assignment = assignment.student_view(login)
+
         slipunits_now = slip_units_now(assignment.due_date)
         is_visible = now_compare(assignment.not_visible_before) >= 0
         if assignment.manual_grading:
             can_build = False
         else:
             can_build = now_compare(assignment.cannot_build_after) <= 0
-
-        if has_build_exception(assignment, login):
-            can_build = True
-            is_visible = True
 
         if not is_visible:
             abort(404)
@@ -240,6 +238,7 @@ def build_now():
     assignment = get_assignment_by_name(job_name)
     if not assignment:
         abort(400)
+    assignment = assignment.student_view(repo)
     if assignment.manual_grading:
         abort(400)
 
@@ -255,8 +254,7 @@ def build_now():
             abort(403)
 
     if now_compare(assignment.not_visible_before, assignment.cannot_build_after) != 0:
-        if not has_build_exception(assignment, login):
-            abort(400)
+        abort(400)
 
     branch_hash = get_branch_hash(repo, "master")
     message = None
