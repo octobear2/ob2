@@ -89,6 +89,7 @@ class Worker(object):
             # if the job doesn't exist for some reason, the resulting TypeError will be caught
             # and logged
             assignment = get_assignment_by_name(job_name)
+            assignment = assignment.student_view(source)
             due_date = assignment.due_date
             job_handler = get_job(job_name)
             log, score = job_handler(source, commit)
