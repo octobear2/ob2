@@ -363,7 +363,7 @@ def group_respond():
             super_value = get_super(c, user_id)
             dropped = super_value is not None and super_value < 0
             if dropped:
-                fail_validation("You are no longer enrolled in the class")
+                fail_validation("You are not enrolled in the class; contact a TA if you believe this is a mistake")
 
             c.execute('''SELECT status FROM invitations WHERE invitation_id = ? AND user = ?''',
                       [invitation_id, user_id])
@@ -433,7 +433,7 @@ def group_create():
             super_value = get_super(c, inviter_user_id)
             dropped = super_value is not None and super_value < 0
             if dropped:
-                fail_validation("You are no longer enrolled in the class")
+                fail_validation("You are not enrolled in the class; contact a TA if you believe this is a mistake")
 
             grouplimit = get_grouplimit(c, inviter_user_id)
             if grouplimit < 1:
