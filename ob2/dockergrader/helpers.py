@@ -114,12 +114,12 @@ def ensure_files_match(container, path, file_checksums):
     Ensures that files have not been tampered with. Uses SHASUM in text mode (default).
 
         PATH           -- The path to search.
-        FILE_CHECKSUMS -- A list of (sha1sum, file_path) pairs. The file_path should be in the form
-                          `./path/file.c`.
+        FILE_CHECKSUMS -- A list of (sha256sum, file_path) pairs. The file_path should be in the
+                          form `./path/file.c`.
 
     """
     actual_sums = {}
-    actual_sum_bytes = container.bash("cd %s ; find . -type f -print0 | xargs -0 sha1sum" %
+    actual_sum_bytes = container.bash("cd %s ; find . -type f -print0 | xargs -0 sha256sum" %
                                       bash_quote(path)).decode("utf-8", "backslashreplace")
     actual_sum_line_matcher = re.compile(r"^(?P<checksum>[\da-fA-F]+)[ \t](?P<mode>[ *?^])" +
                                          r"(?P<name>[^\0]*)")
@@ -127,7 +127,7 @@ def ensure_files_match(container, path, file_checksums):
         if not actual_sum_line:
             continue
         if actual_sum_line[0] == "\\":
-            # Special syntax in Ubuntu sha1sum for escaping the newline character in a file name
+            # Special syntax in Ubuntu sha256sum for escaping the newline character in a file name
             # This code is adapted from unescape() in /usr/bin/shasum
             actual_sum_line = actual_sum_line[1:]
             actual_sum_line = actual_sum_line.replace("\\\\", "\0")
