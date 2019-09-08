@@ -72,14 +72,19 @@ def index():
 @_require_login
 def assignments():
     with DbCursor() as c:
+        student = _get_student(c)
+        user_id, _, _, login, _, _ = student
         c.execute("SELECT assignment, score, slipunits, updated FROM grades WHERE user = ?",
-                  [user_id()])
+                  [user_id])
         grade_info = {assignment: (score, slipunits, updated)
                       for assignment, score, slipunits, updated in c.fetchall()}
         template_common = _template_common(c)
-    assignments_info = [(a.name, a.full_score, a.weight, a.due_date) +
-                        grade_info.get(a.name, (None, None, None))
-                        for a in config.assignments if now_compare(a.not_visible_before) >= 0]
+    assignments_info = []
+    for assignment in config.assignments:
+        a = assignment.student_view(login)
+        if now_compare(a.not_visible_before) >= 0:
+            assignments_info.append((a.name, a.full_score, a.weight, a.due_date) +
+                        grade_info.get(a.name, (None, None, None)))
     return render_template("dashboard/assignments.html",
                            assignments_info=assignments_info,
                            **template_common)
@@ -95,6 +100,8 @@ def assignments_one(name):
 
         if not assignment:
             abort(404)
+
+        assignment = assignment.student_view(login)
 
         slipunits_now = slip_units_now(assignment.due_date)
         is_visible = now_compare(assignment.not_visible_before) >= 0
@@ -231,9 +238,8 @@ def build_now():
     assignment = get_assignment_by_name(job_name)
     if not assignment:
         abort(400)
+    assignment = assignment.student_view(repo)
     if assignment.manual_grading:
-        abort(400)
-    if now_compare(assignment.not_visible_before, assignment.cannot_build_after) != 0:
         abort(400)
 
     with DbCursor() as c:
@@ -246,6 +252,9 @@ def build_now():
 
         if repo not in repos:
             abort(403)
+
+    if now_compare(assignment.not_visible_before, assignment.cannot_build_after) != 0:
+        abort(400)
 
     branch_hash = get_branch_hash(repo, "master")
     message = None
