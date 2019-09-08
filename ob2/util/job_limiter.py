@@ -13,7 +13,7 @@ except (AttributeError, AssertionError):
 
 def rate_limit_fail_build(build_name):
     assert MAX_JOBS_ALLOWED is not None
-    message = "Cannot have more than {} builds in progress or queued.".format(MAX_JOBS_ALLOWED)
+    message = "Cannot have more than {0} {1} in progress or queued.".format(MAX_JOBS_ALLOWED, "build" if MAX_JOBS_ALLOWED == 1 else "builds")
     with DbCursor() as c:
         c.execute('''UPDATE builds SET status = ?, updated = ?, log = ?
                      WHERE build_name = ?''', [FAILED, now_str(), message, build_name])
