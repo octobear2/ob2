@@ -7,9 +7,9 @@ class AssignmentStudentView(object):
 
     def __getattr__(self, key):
         if self.assignment.exceptions is not None:
-            if self.login in self.assignment.exceptions:
-                if key in self.assignment.exceptions[self.login]:
-                    return self.assignment.exceptions[self.login][key]
+            for exception in self.assignment.exceptions:
+                if self.login in exception.logins and key in exception:
+                    return exception[key]
         return getattr(self.assignment, key)
 
 class Assignment(object):
@@ -26,7 +26,7 @@ class Assignment(object):
               ("end_auto_building", str),
               ("due_date", str),
               ("cannot_build_after", str),
-              ("exceptions", dict)]
+              ("exceptions", list)]
 
     _index_by_key = {key: index for index, (key, _) in enumerate(schema)}
 
@@ -63,7 +63,7 @@ class Assignment(object):
                 exception_start_auto_building = start_auto_building
                 exception_end_auto_building = end_auto_building
                 exception_cannot_build_after = cannot_build_after
-                for _, exception in self.exceptions.items():
+                for exception in self.exceptions:
                     if "not_visible_before" in exception:
                         exception_not_visible_before = parse_time(exception["not_visible_before"])
                     if "due_date" in exception:
