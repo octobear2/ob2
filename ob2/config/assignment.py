@@ -8,7 +8,7 @@ class AssignmentStudentView(object):
     def __getattr__(self, key):
         if self.assignment.exceptions is not None:
             for exception in self.assignment.exceptions:
-                if self.login in exception.logins and key in exception:
+                if self.login in exception["logins"] and key in exception:
                     return exception[key]
         return getattr(self.assignment, key)
 
