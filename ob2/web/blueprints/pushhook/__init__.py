@@ -65,7 +65,7 @@ def pushhook():
                     break
                 except apsw.Error:
                     logging.exception("Failed to create build, retrying...")
-            if should_limit_source(repo_name):
+            if should_limit_source(repo_name, job_to_run):
                 rate_limit_fail_build(build_name)
             else:
                 job = Job(build_name, repo_name, "GitHub push")

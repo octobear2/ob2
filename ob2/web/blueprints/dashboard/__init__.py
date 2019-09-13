@@ -276,7 +276,7 @@ def build_now():
     with DbCursor() as c:
         build_name = create_build(c, job_name, repo, branch_hash, message)
 
-    if should_limit_source(repo):
+    if should_limit_source(repo, job_name):
         rate_limit_fail_build(build_name)
     else:
         job = Job(build_name, repo, "Web interface")

@@ -18,12 +18,19 @@ def rate_limit_fail_build(build_name):
         c.execute('''UPDATE builds SET status = ?, updated = ?, log = ?
                      WHERE build_name = ?''', [FAILED, now_str(), message, build_name])
 
-def should_limit_source(repo_name):
+def should_limit_source(repo_name, assignment=None):
     if MAX_JOBS_ALLOWED is None:
         return False
-    with DbCursor() as c:
-        c.execute('''SELECT count(*) FROM builds
-                                WHERE source = ? AND (status = ? OR status = ?)''',
-                  [repo_name, QUEUED, IN_PROGRESS])
-        count = int(c.fetchone()[0])
-        return count > MAX_JOBS_ALLOWED
+    if assignment:
+        with DbCursor() as c:
+            c.execute('''SELECT count(*) FROM builds
+                         WHERE source = ? AND (status = ? OR status = ?) AND job = ?''',
+                      [repo_name, QUEUED, IN_PROGRESS, assignment])
+            count = int(c.fetchone()[0])
+    else:
+        with DbCursor() as c:
+            c.execute('''SELECT count(*) FROM builds
+                         WHERE source = ? AND (status = ? OR status = ?)''',
+                      [repo_name, QUEUED, IN_PROGRESS])
+            count = int(c.fetchone()[0])
+    return count > MAX_JOBS_ALLOWED
