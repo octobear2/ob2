@@ -59,7 +59,7 @@ class Datasets(object):
 
         # The minimum number of bins for factorizable ranges.
         # Does not apply when range < max_bins.
-        min_bins = max_bins / 2
+        min_bins = max_bins // 2
 
         # How flexible is the max_bins? We'll allow this many more bins.
         flexibility = 1.8
@@ -84,7 +84,7 @@ class Datasets(object):
                     if per_bin * max_bins > bin_range:
                         break
             if per_bin * max_bins * flexibility > bin_range:
-                num_bins = bin_range / per_bin
+                num_bins = bin_range // per_bin
                 per_bin = float(per_bin)
             else:
                 # The best per_bin is too small to look good.
