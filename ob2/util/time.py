@@ -1,5 +1,5 @@
 import pytz
-from datetime import datetime
+from datetime import datetime, timedelta
 from dateutil import parser as DateParser
 from math import ceil
 
@@ -56,7 +56,6 @@ def now_compare(start_date, end_date=None):
     Given (start_date, end_date), return -1 if now() is before start_date
                                   return  1 if now() is after end_date
                                   return  0 if now() is between start_date and end_date inclusive.
-
     If end_date is ommitted, it takes the same value as start_date.
 
     """
@@ -73,6 +72,16 @@ def now_compare(start_date, end_date=None):
         return 0
     else:
         return 1
+
+
+def add_grace_period(target):
+    """
+    Adds the slip grace period to the target time. Useful for applying the grace period
+    to build deadlines. Returns a time object.
+    """
+    if isinstance(target, str):
+        target = parse_time(target)
+    return target + timedelta(seconds=config.slip_grace_period)
 
 
 def parse_to_relative(target, past_relative_cutoff=86400, future_relative_cutoff=-86400):

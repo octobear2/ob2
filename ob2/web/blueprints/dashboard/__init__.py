@@ -28,7 +28,7 @@ from ob2.util.github_api import get_branch_hash, get_commit_message
 from ob2.util.github_login import is_ta
 from ob2.util.group_constants import ACCEPTED, INVITED, REJECTED
 from ob2.util.security import require_csrf_token
-from ob2.util.time import now_compare, slip_units_now
+from ob2.util.time import now_compare, slip_units_now, add_grace_period
 from ob2.util.validation import fail_validation, ValidationError, redirect_with_error
 from ob2.util.job_limiter import rate_limit_fail_build, should_limit_source
 
@@ -114,7 +114,7 @@ def assignments_one(name):
         if assignment.manual_grading:
             can_build = False
         else:
-            can_build = now_compare(assignment.cannot_build_after) <= 0
+            can_build = now_compare(add_grace_period(assignment.cannot_build_after)) <= 0
 
         if not is_visible:
             abort(404)
@@ -261,7 +261,7 @@ def build_now():
         if repo not in repos:
             abort(403)
 
-    if now_compare(assignment.not_visible_before, assignment.cannot_build_after) != 0 or dropped:
+    if now_compare(assignment.not_visible_before, add_grace_period(assignment.cannot_build_after)) != 0 or dropped:
         abort(400)
 
     branch_hash = get_branch_hash(repo, "master")
