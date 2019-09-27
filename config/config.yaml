@@ -90,6 +90,9 @@ use_max_score_build: false
 # you would like. Once this feature is enabled, you should not switch it off again.
 groups_enabled: false
 
+# Number of workers for dockergrader.
+num_workers: 3
+
 # Minimum and maximum size of groups.
 group_min_size: 1
 group_max_size: 2

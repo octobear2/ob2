@@ -72,7 +72,7 @@ def main():
 
         # Start background threads for all the apps
         # Warning: Do not try to start more than 1 web thread. The web server is already threaded.
-        apps = [(ob2.dockergrader, 3),
+        apps = [(ob2.dockergrader, config.num_workers),
                 (ob2.web, 1)]
         if config.mailer_enabled:
             apps.append((ob2.mailer, 1))
