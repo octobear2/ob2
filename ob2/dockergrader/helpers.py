@@ -85,7 +85,7 @@ def ensure_no_binaries(container, path, whitelist=[]):
     result = container.bash(r"""cd %s
                                 find . -type f ! -empty %s -exec sh -c %s {} \; -print
                              """ % (bash_quote(path), ignores, bash_quote(find_payload)))
-    binaries = result.decode("utf-8").strip()
+    binaries = result.decode("utf-8", "backslashreplace").strip()
     if binaries:
         raise JobFailedError("I found some binary files in your code. Please remove the " +
                              "following files before we continue:\n\n" + binaries)
@@ -102,7 +102,7 @@ def ensure_files_exist(container, path, files):
     for file_path in file_paths.split(b"\0"):
         if file_path:
             # There's a trailing null-byte at the end of the output (probably?)
-            files.discard(file_path.decode("utf-8"))
+            files.discard(file_path.decode("utf-8", "backslashreplace"))
     if files:
         raise JobFailedError("All of the following files are REQUIRED to be present in your " +
                              "code, but I didn't find some of them. Please verify that each " +
