@@ -243,8 +243,8 @@ def enter_grades_confirm():
 @_require_ta
 def students():
     with DbCursor() as c:
-        c.execute('''SELECT id, name, sid, login, github, email, super
-                     FROM users ORDER BY super DESC, login''')
+        c.execute('''SELECT users.id, users.name, users.sid, users.login, groupsusers.'group', users.github, users.email, users.super
+                     FROM users LEFT JOIN groupsusers ON groupsusers.user = users.id ORDER BY super DESC, login''')
         students = c.fetchall()
     return render_template("ta/students.html",
                            students=students,
