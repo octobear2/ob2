@@ -10,7 +10,6 @@
                 <th class="mdl-data-table__cell--non-numeric">Name</th>
                 <th class="mdl-data-table__cell--non-numeric">Student ID</th>
                 <th class="mdl-data-table__cell--non-numeric">Login</th>
-                <th class="mdl-data-table__cell--non-numeric">Group</th>
                 <th class="mdl-data-table__cell--non-numeric">GitHub Username</th>
                 <th class="mdl-data-table__cell--non-numeric">Email</th>
                 <th class="mdl-data-table__cell--non-numeric">Database ID</th>
@@ -26,7 +25,6 @@
                 {{ cell_gradeslog_student(name, github, user_id, super) }}
                 <td class="mdl-data-table__cell--non-numeric">{{ sid }}</td>
                 {{ cell_source(login, link_to="ta") }}
-                {{ cell_source(group, link_to="ta") }}
                 <td class="mdl-data-table__cell--non-numeric">
                 {% if github %}
                     <a rel="noreferrer" href="{{ github_user_url(github) }}">{{ github }}</a>
