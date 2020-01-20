@@ -25,14 +25,19 @@ class Assignment(object):
               ("start_auto_building", str),
               ("end_auto_building", str),
               ("due_date", str),
-              ("cannot_build_after", str),
-              ("exceptions", list)]
+              ("cannot_build_after", str)]
 
-    _index_by_key = {key: index for index, (key, _) in enumerate(schema)}
+    # Apparently, the above "schema" field gets used to create a SQLite
+    # assignments table. The list of exceptions does not belong in the table,
+    # so we don't put it in "schema". But we still want to support getattr on
+    # an Assignment instance to check if a particular student is an exception,
+    # because the exception appears in the config.
+    schema_config = schema + [("exceptions", list)]
+    _index_by_key = {key: index for index, (key, _) in enumerate(schema_config)}
 
     def __init__(self, *args, **kwargs):
-        assert len(args) < len(self.schema)
-        args = list(args) + [None] * (len(self.schema) - len(args))
+        assert len(args) < len(self.schema_config)
+        args = list(args) + [None] * (len(self.schema_config) - len(args))
         for key, value in kwargs.items():
             args[self._index_by_key[key]] = value
         self.args = args
