@@ -82,7 +82,7 @@ def ensure_no_binaries(container, path, whitelist=[]):
     # This command should NOT follow symbolic links.
     ignores = " ".join(["! -path %s"] * len(whitelist)) % tuple(map(bash_quote, whitelist))
     find_payload = 'file -i "$0" | egrep -q "x-(sharedlib|object|executable); charset=binary"'
-    result = container.bash(r"""cd %s
+    result = container.bash(r"""cd %s &&
                                 find . -type f ! -empty %s -exec sh -c %s {} \; -print
                              """ % (bash_quote(path), ignores, bash_quote(find_payload)))
     binaries = result.decode("utf-8", "backslashreplace").strip()
