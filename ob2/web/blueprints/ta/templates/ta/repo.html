@@ -47,7 +47,7 @@
                 {% if student_photos_enabled() %}
                 <td class="mdl-data-table__cell--non-numeric" style="padding-top: 0; padding-bottom: 0; width: 48px;">
                     {% if photo %}
-                    <img class="ob2-photo-small" src="data:image/jpeg;base64,{{ b2a_base64(photo) }}" />
+                    <img class="ob2-photo-small" src="data:image/jpeg;base64,{{ b2a_base64(photo).decode('utf-8').strip() }}" />
                     {% endif %}
                 </td>
                 {% endif %}
