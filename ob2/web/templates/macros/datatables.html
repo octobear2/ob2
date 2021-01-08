@@ -46,6 +46,17 @@
     </tr>
 {% endmacro %}
 
+{% macro row_stop_build(build_name, status) %}
+    {% if status != SUCCESS and status != FAILED %}
+        <tr>
+            <td class="mdl-data-table__cell--non-numeric">&nbsp;</td>
+            <td class="mdl-data-table__cell--non-numeric" style="min-width: 120px;">
+                <form action="stop"><button type="submit" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-color--primary">Stop Build</button></form>
+            </td>
+        </tr>
+    {% endif %}
+{% endmacro %}
+
 {% macro cell_commit(commit, source, len=8) %}
     <td class="mdl-data-table__cell--non-numeric">
     {% if commit != None %}

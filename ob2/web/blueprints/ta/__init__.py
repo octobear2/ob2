@@ -385,6 +385,19 @@ def builds_one(name):
                            build_info=build_info,
                            **_template_common())
 
+@blueprint.route("/ta/builds/<name>/stop")
+@_require_ta
+def builds_one_stop(name):
+    with DbCursor() as c:
+        c.execute('''UPDATE builds SET status = 1 WHERE build_name = ?''', [name])
+        c.execute('''SELECT build_name, status, score, source, `commit`, message, job, started,
+                     log FROM builds WHERE build_name = ? LIMIT 1''', [name])
+        build = c.fetchone()
+        build_info = build + (get_assignment_by_name(build[6]).full_score,)
+        template_common = _template_common(c)
+    return render_template("dashboard/builds_one.html",
+                           build_info=build_info,
+                           **template_common)
 
 @blueprint.route("/ta/assignments/")
 @_require_ta
