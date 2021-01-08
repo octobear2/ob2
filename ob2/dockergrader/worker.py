@@ -28,6 +28,7 @@ class Worker(object):
         self.status = None
         self.updated = now()
         self.identifier = dockergrader_queue.register_worker(self)
+        self.thread = threading.current_thread()
 
     def probe(self, with_log=False):
         with self.lock:
@@ -119,6 +120,14 @@ class Worker(object):
                     logging.exception("Exception raised while reporting JobFailedError")
                 else:
                     self._log("JobFailedError successfully reported via email")
+            return
+        except KeyboardInterrupt as e:
+            self._log("Manually interrupted build %s" % build_name, exc=True)
+            logging.exception("Manually interrupted build %s" % build_name)
+            with DbCursor() as c:
+                c.execute('''UPDATE builds SET status = ?, updated = ?, log = ?
+                             WHERE build_name = ?''',
+                          [FAILED, now_str(), "Build interrupted.", build_name])
             return
         except Exception as e:
             self._log("Exception raised while building %s" % build_name, exc=True)

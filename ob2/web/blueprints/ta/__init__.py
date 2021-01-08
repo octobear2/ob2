@@ -9,6 +9,8 @@ from flask import (Blueprint, Response, abort, flash, redirect, render_template,
                    url_for)
 from functools import wraps
 from math import sqrt
+import threading
+import ctypes
 
 import ob2.config as config
 from ob2.config import (
@@ -38,6 +40,7 @@ from ob2.util.config_data import get_assignment_by_name
 from ob2.util.datasets import Datasets
 from ob2.util.github_login import github_username, is_ta
 from ob2.util.security import require_csrf_token
+from ob2.util.time import now_str
 from ob2.util.validation import (float_or_none, int_or_none, same_length, fail_validation,
                                  ValidationError, redirect_with_error)
 
@@ -388,8 +391,25 @@ def builds_one(name):
 @blueprint.route("/ta/builds/<name>/stop", methods=["POST"])
 @_require_ta
 def builds_one_stop(name):
+    for job in dockergrader_queue.snapshot():
+        if job.build_name == name:
+            dockergrader_queue._queue.remove(job)
+    for worker in dockergrader_queue._workers:
+        if worker.status == name:
+            t, tid = worker.thread, -1
+            if hasattr(t, '_thread_id'):
+                tid = t._thread_id
+            else:
+                for id, thread in threading._active.items():
+                    if thread is t:
+                        tid = id
+            ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(tid), ctypes.py_object(KeyboardInterrupt))
+            # Python 3.7 updates first parameter type to unsigned long
+            # This is QUITE the hack...
     with DbCursor() as c:
-        c.execute('''UPDATE builds SET status = 1 WHERE build_name = ?''', [name])
+        c.execute('''UPDATE builds SET status = ?, updated = ?, log = ?
+                        WHERE build_name = ?''',
+                    [1, now_str(), "Build interrupted.", name])
         c.execute('''SELECT build_name, status, score, source, `commit`, message, job, started,
                      log FROM builds WHERE build_name = ? LIMIT 1''', [name])
         build = c.fetchone()

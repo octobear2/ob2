@@ -4,6 +4,8 @@ from flask import (Blueprint, Response, abort, g, redirect, render_template, req
                    url_for)
 from functools import wraps
 from math import sqrt
+import threading
+import ctypes
 
 import ob2.config as config
 from ob2.database import DbCursor
@@ -28,7 +30,7 @@ from ob2.util.github_api import get_branch_hash, get_commit_message
 from ob2.util.github_login import is_ta
 from ob2.util.group_constants import ACCEPTED, INVITED, REJECTED
 from ob2.util.security import require_csrf_token
-from ob2.util.time import now_compare, slip_units_now, add_grace_period
+from ob2.util.time import now_str, now_compare, slip_units_now, add_grace_period
 from ob2.util.validation import fail_validation, ValidationError, redirect_with_error
 from ob2.util.job_limiter import rate_limit_fail_build, should_limit_source
 
@@ -247,8 +249,25 @@ def builds_one_stop(name):
                   [name] + repos)
         if not c.fetchone():
             abort(404)
+    for job in dockergrader_queue.snapshot():
+        if job.build_name == name:
+            dockergrader_queue._queue.remove(job)
+    for worker in dockergrader_queue._workers:
+        if worker.status == name:
+            t, tid = worker.thread, -1
+            if hasattr(t, '_thread_id'):
+                tid = t._thread_id
+            else:
+                for id, thread in threading._active.items():
+                    if thread is t:
+                        tid = id
+            ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(tid), ctypes.py_object(KeyboardInterrupt))
+            # Python 3.7 updates first parameter type to unsigned long
+            # This is QUITE the hack...
     with DbCursor() as c:
-        c.execute('''UPDATE builds SET status = 1 WHERE build_name = ?''', [name])
+        c.execute('''UPDATE builds SET status = ?, updated = ?, log = ?
+                        WHERE build_name = ?''',
+                    [1, now_str(), "Build interrupted.", name])
         student = _get_student(c)
         user_id, _, _, login, _, _ = student
         group_repos = get_groups(c, user_id)
