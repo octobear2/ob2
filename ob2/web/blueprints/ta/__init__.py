@@ -33,6 +33,7 @@ from ob2.database.helpers import (
     modify_grouplimit,
 )
 from ob2.dockergrader import dockergrader_queue
+from ob2.repomanager import repomanager_queue
 from ob2.util.authentication import authenticate_as_user
 from ob2.util.config_data import get_assignment_by_name
 from ob2.util.datasets import Datasets
@@ -500,6 +501,33 @@ def repo(repo):
         full_scores = {assignment.name: assignment.full_score
                        for assignment in config.assignments}
         builds_info = (build + (full_scores.get(build[6]),) for build in builds)
+
+    return render_template("ta/repo.html",
+                           repo=repo,
+                           students=students,
+                           builds_info=builds_info,
+                           **_template_common())
+
+
+@blueprint.route("/ta/repo/<repo>/resend", methods=["POST"])
+@_require_ta
+def repo_resend(repo):
+    with DbCursor() as c:
+        owners = get_repo_owners(c, repo)
+        if not owners:
+            abort(404)
+        c.execute('''SELECT id, name, sid, login, github, email, super, photo FROM users
+                     WHERE id in (%s)''' % ",".join(["?"] * len(owners)), owners)
+        students = c.fetchall()
+        c.execute('''SELECT build_name, source, status, score, `commit`, message, job, started
+                     FROM builds WHERE source = ? ORDER BY started DESC''', [repo])
+        builds = c.fetchall()
+        full_scores = {assignment.name: assignment.full_score
+                       for assignment in config.assignments}
+        builds_info = (build + (full_scores.get(build[6]),) for build in builds)
+        if True or not config.github_read_only_mode: # DEBUG
+            github_job = repomanager_queue.create(c, "resend_invites", (repo, [student[4] for student in students]))
+            repomanager_queue.enqueue(github_job)
 
     return render_template("ta/repo.html",
                            repo=repo,
