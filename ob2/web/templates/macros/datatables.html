@@ -51,7 +51,10 @@
         <tr>
             <td class="mdl-data-table__cell--non-numeric">&nbsp;</td>
             <td class="mdl-data-table__cell--non-numeric" style="min-width: 120px;">
-                <form action="stop"><button type="submit" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-color--primary">Stop Build</button></form>
+                <form action="stop" method="post">
+                    <input type="hidden" name="_csrf_token" value="{{ generate_csrf_token() }}" />
+                    <button type="submit" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-color--primary">Stop Build</button>
+                </form>
             </td>
         </tr>
     {% endif %}

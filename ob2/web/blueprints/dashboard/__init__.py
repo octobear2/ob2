@@ -235,7 +235,7 @@ def builds_one(name):
                            build_info=build_info,
                            **template_common)
 
-@blueprint.route("/dashboard/builds/<name>/stop")
+@blueprint.route("/dashboard/builds/<name>/stop", methods=["POST"])
 @_require_login
 def builds_one_stop(name):
     with DbCursor() as c:

@@ -385,7 +385,7 @@ def builds_one(name):
                            build_info=build_info,
                            **_template_common())
 
-@blueprint.route("/ta/builds/<name>/stop")
+@blueprint.route("/ta/builds/<name>/stop", methods=["POST"])
 @_require_ta
 def builds_one_stop(name):
     with DbCursor() as c:
