@@ -244,7 +244,7 @@ def enter_grades_confirm():
 def students():
     with DbCursor() as c:
         c.execute('''SELECT id, name, sid, login, github, email, super
-                     FROM users ORDER BY super DESC, login''')
+                     FROM users ORDER BY super DESC, id''')
         students = c.fetchall()
     return render_template("ta/students.html",
                            students=students,
