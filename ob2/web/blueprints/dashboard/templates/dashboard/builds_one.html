@@ -1,5 +1,5 @@
 {% from "macros/datatables.html" import row_build_name, row_status, row_commit, row_message,
-                                        row_source, row_job, row_build_started, row_build_log %}
+                                        row_source, row_job, row_build_started, row_build_log, row_stop_build %}
 {% extends "_dashboard.html" %}
 {% block content %}
 {% for (build_name, status, score, source, commit, message, job, started, log, full_score)
@@ -15,6 +15,7 @@
             {{ row_source(source) }}
             {{ row_job(job) }}
             {{ row_build_started(started) }}
+            {{ row_stop_build(build_name, status) }}
             {{ row_build_log(log) }}
         </tbody>
     </table>
