@@ -1,7 +1,7 @@
 import logging
 
 import ob2.config as config
-from ob2.util.github_api import _assign_repo
+from ob2.util.github_api import _assign_repo, _resend_invites
 from ob2.util.resumable_queue import ResumableQueue
 
 
@@ -16,6 +16,8 @@ class Repomanager(ResumableQueue):
         """
         if operation == "assign_repo":
             _assign_repo(*payload)
+        elif operation == "resend_invites":
+            _resend_invites(*payload)
         else:
             logging.warning("Unknown operation requested in repomanager: %s" % operation)
 

@@ -111,5 +111,26 @@ def _assign_repo(repo_name, members=[]):
             assert c.status_code == 201 or c.status_code == 204, \
                 "Unable to add member %s to %s" % (repr(member), repr(fq_repo_name))
 
+
+def _resend_invites(repo_name, members=[]):
+    """
+    (PRIVATE method, use the repomanager instead) Send invites to members of an existing repo.
+    
+    """
+    if config.github_read_only_mode:
+        raise RuntimeError("Cannot assign repo because of GitHub read-only mode")
+    github = _get_github_admin()
+    repo = github.repository(config.github_organization, repo_name)
+    collaborators = {user.login for user in repo.iter_collaborators()}
+    for member in members:
+        if member not in collaborators:
+            # See above _assign_repo comment
+            assert member is not None, "Trying to add None member as collaborator!"
+            url = repo._build_url('collaborators', member, base_url=repo._api)
+            c = repo._put(url)
+            assert c.status_code == 201 or c.status_code == 204, \
+                "Unable to add member %s to %s" % (repr(member), repr(repo_name))
+
+
 class GitHubTransactionError(Exception):
     pass

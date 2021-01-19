@@ -21,7 +21,13 @@
             </tr>
         </tbody>
     </table>
-    <h4>Students</h4>
+    <h4>
+        Students
+        <form action="resend" method="post" style="float:right">
+            <input type="hidden" name="_csrf_token" value="{{ generate_csrf_token() }}" />
+            <button type="submit" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-color--primary">Resend Invites</button>
+        </form>
+    </h4>
     <table class="ob2-fullwidth mdl-data-table mdl-js-data-table mdl-shadow--2dp
                   mdl-color--white">
         <thead>
