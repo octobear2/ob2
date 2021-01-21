@@ -35,4 +35,4 @@ PyYaml
 apsw
 
 # whsu00: temporary requirement for mailer api
-sicp==0.1.11b212.dev2
+sicp>=0.1.11b212.dev2
