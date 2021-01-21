@@ -16,7 +16,15 @@ import ob2.mailer as mailer
 from ob2.util.authentication import user_id
 from ob2.util.security import generate_secure_random_string, get_request_validity
 from ob2.util.github_login import is_ta
+from ob2.util.hooks import apply_filters
 from ob2.util.templating import JINJA_EXPORTS
+
+import smtplib
+from base64 import b64decode
+from sicp.common.rpc.secrets import validates_master_secret
+from sicp.common.rpc.mail import send_email
+from email.message import EmailMessage
+from mimetypes import guess_type
 
 app = Flask("ob2.web", static_url_path=("%s/static" % config.web_public_root))
 if config.web_behind_proxy:
@@ -75,6 +83,34 @@ def site_index():
     else:
         return redirect(url_for("onboarding.log_in"), code=302)
 
+@app.route("/site-map")
+def site_map():
+    return str(app.url_map)
+
+@send_email.bind(app)
+@validates_master_secret
+def send_email(sender, target, subject, body, attachments = {}):
+    msg = EmailMessage()
+    msg["Subject"] = subject
+    msg["From"] = sender
+    msg["To"] = target
+    msg.set_content(body)
+    for attach_name, attach_content in attachments.items():
+        ctype, encoding = guess_type(attach_name)
+        if ctype is None or encoding is not None:
+            ctype = "application/octet-stream"
+        maintype, subtype = ctype.split("/", 1)
+        msg.add_attachment(
+            b64decode(attach_content.encode("ascii")),
+            maintype=maintype,
+            subtype=subtype,
+            filename=attach_name,
+        )
+    smtp_server = apply_filters("connect-to-smtp", smtplib.SMTP())
+    smtp_server.send_message(msg)
+    smtp_server.quit()
+    return ('', 202)
+# app.add_url_rule("/autograder/api/send_email", "send_email", send_email, methods=["POST"])
 
 def main():
     server_type = "werkzeug"

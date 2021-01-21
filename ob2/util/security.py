@@ -13,6 +13,9 @@ def generate_secure_random_string(N=30):
 
 
 def get_request_validity():
+    # Public API
+    if "/api/" in request.path:
+        return True
     # GitHub signature will suffice for CSRF check
     github_signature = request.headers.get("X-Hub-Signature")
     if github_signature:
