@@ -345,15 +345,15 @@ def group():
         can_add_groups = grouplimit > 0
 
         # Fetch established groups
-        c.execute('''SELECT users.name, users.email, users.github, groupsusers.`group`
+        c.execute('''SELECT users.name, users.email, users.github, users.login, groupsusers.`group`
                      FROM groupsusers LEFT JOIN users ON groupsusers.user = users.id
                      WHERE groupsusers.`group` IN
                         (SELECT `group` from groupsusers WHERE user = ?)
                      ORDER BY groupsusers.`group`, users.name ASC''', [user_id])
         partners = c.fetchall()
         groups = OrderedDict()
-        for name, email, github, group in partners:
-            groups.setdefault(group, []).append((name, email, github))
+        for name, email, github, login, group in partners:
+            groups.setdefault(group, []).append((name, email, github, login))
 
         # Fetch all my groups that are waiting on other people to accept
         c.execute('''SELECT users.name, invitations.status, invitations.invitation_id

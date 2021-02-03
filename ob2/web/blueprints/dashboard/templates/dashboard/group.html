@@ -15,8 +15,8 @@
         </div>
         <div class="mdl-card__supporting-text">
             <p>
-            {% for name, email, github in members %}
-                {{ name }}
+            {% for name, email, github, login in members %}
+                {{ name }} ({{ login }})
                 {% if loop.last == False %}<br />{% endif %}
             {% endfor %}
             </p>
@@ -30,7 +30,7 @@
         <div class="mdl-card__actions mdl-card--border">
             <a class="mdl-button mdl-js-button mdl-js-ripple-effect"
                href="mailto:
-               {%- for name, email, github in members -%}
+               {%- for name, email, github, login in members -%}
                    {{ name }}&lt;{{ email }}&gt;
                    {%- if loop.last == False %},{% endif -%}
                {%- endfor -%}
