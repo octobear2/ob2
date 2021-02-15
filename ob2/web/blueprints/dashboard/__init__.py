@@ -311,7 +311,7 @@ def build_now():
     if now_compare(assignment.not_visible_before, add_grace_period(assignment.cannot_build_after)) != 0 or dropped:
         abort(400)
 
-    branch_hash = get_branch_hash(repo, "master")
+    branch_hash = get_branch_hash(repo, "master") or get_branch_hash(repo, "main")
     message = None
     if branch_hash:
         message = get_commit_message(repo, branch_hash)
