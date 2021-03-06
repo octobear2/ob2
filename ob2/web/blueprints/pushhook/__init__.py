@@ -68,7 +68,7 @@ def pushhook():
             if should_limit_source(repo_name, job_to_run):
                 rate_limit_fail_build(build_name)
             else:
-                job = Job(build_name, repo_name, "GitHub push")
+                job = Job(build_name, repo_name, "Automatic build.")
                 dockergrader_queue.enqueue(job)
         return ('', 204)
     except Exception:

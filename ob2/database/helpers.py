@@ -173,9 +173,9 @@ def get_photo(c, user_id):
         pass
 
 
-def create_build(c, job_name, source, commit, message):
+def create_build(c, job_name, source, commit, message, build_type="build"):
     build_number = get_next_autoincrementing_value(c, "dockergrader_last_build_number")
-    build_name = "%s-build-%d" % (job_name, build_number)
+    build_name = "%s-%s-%d" % (job_name, build_type, build_number)
     c.execute('''INSERT INTO builds (build_name, source, `commit`, message, job, status, score,
                  started, updated, log) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
               [build_name, source, commit, message, job_name, QUEUED, 0.0, now_str(),

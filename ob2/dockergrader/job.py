@@ -2,7 +2,7 @@ from ob2.util.time import now
 
 
 class Job(object):
-    def __init__(self, build_name, source, trigger):
+    def __init__(self, build_name, source, trigger, graded=True):
         """
         Creates a new dockergrader job to be added to the queue.
 
@@ -11,6 +11,7 @@ class Job(object):
         self.source = source
         self.trigger = trigger
         self.updated = now()
+        self.graded = graded
 
 
 class JobFailedError(Exception):

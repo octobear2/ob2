@@ -117,6 +117,7 @@ def assignments_one(name):
             can_build = False
         else:
             can_build = now_compare(add_grace_period(assignment.cannot_build_after)) <= 0
+        manual_grading = assignment.manual_grading
 
         if not is_visible:
             abort(404)
@@ -168,6 +169,7 @@ def assignments_one(name):
                            most_recent_repo=most_recent_repo,
                            slipunits_now=slipunits_now,
                            can_build=can_build,
+                           manual_grading=manual_grading,
                            **template_common)
 
 
@@ -288,6 +290,7 @@ def builds_one_stop(name):
 def build_now():
     job_name = request.form.get("f_job_name")
     repo = request.form.get("f_repo")
+    graded = False if "f_graded" in request.form and request.form.get("f_graded") == "False" else True
     assignment = get_assignment_by_name(job_name)
     if not assignment:
         abort(400)
@@ -316,17 +319,21 @@ def build_now():
     if branch_hash:
         message = get_commit_message(repo, branch_hash)
 
+    build_type = "build"
+    if not graded:
+        build_type = "build-ungraded"
+
     # This section doesn't absolutely NEED to be consistent with the previous transaction,
     # since we have not specified any actual data constraints. The only possible logical error
     # would be to fulfill a request when the current user's permissions have been revoked
     # between these two transactions.
     with DbCursor() as c:
-        build_name = create_build(c, job_name, repo, branch_hash, message)
+        build_name = create_build(c, job_name, repo, branch_hash, message, build_type)
 
     if should_limit_source(repo, job_name):
         rate_limit_fail_build(build_name)
     else:
-        job = Job(build_name, repo, "Web interface")
+        job = Job(build_name, repo, "Manual build.", graded)
         dockergrader_queue.enqueue(job)
 
     return redirect(url_for("dashboard.builds_one", name=build_name))

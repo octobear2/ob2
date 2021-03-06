@@ -58,6 +58,7 @@ class Worker(object):
 
     def _process_job(self, job):
         build_name = job.build_name
+        description = job.trigger
         with self.lock:
             self.status = build_name
             self.updated = now()
@@ -147,10 +148,13 @@ class Worker(object):
                                  log = ? WHERE build_name = ?''',
                               [SUCCESS, score, now_str(), log, build_name])
                     slipunits = slip_units(due_date, started)
-                    affected_users = assign_grade_batch(c, owners, job_name, float(score),
-                                                        slipunits, build_name, "Automatic build.",
-                                                        "autograder",
-                                                        dont_lower=config.use_max_score_build)
+                    if job.graded:
+                        affected_users = assign_grade_batch(c, owners, job_name, float(score),
+                                                            slipunits, build_name, description,
+                                                            "autograder",
+                                                            dont_lower=config.use_max_score_build)
+                    else:
+                        affected_users = []
                     break
             except apsw.Error:
                 self._log("Exception raised while assigning grades", exc=True)
