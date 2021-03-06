@@ -109,40 +109,42 @@
                 </p>
             </form>
         {% endif %}
-        <p class="mdl-color-text--grey-600">
-            You can perform a ungraded autograder run to test your code without affecting your grade or slip days.
-        </p>
-        <form action="{{ url_for("dashboard.build_now") }}" method="post">
-            <input type="hidden" name="_csrf_token" value="{{ generate_csrf_token() }}" />
-            <input type="hidden" name="f_job_name" value="{{ name }}" />
-            <input type="hidden" name="f_graded" value="False" />
-            {% if repos|length > 1 %}
-            <p class="mdl-color-text--grey-600" style="margin-left: 22px; margin-bottom: 26px;">
-            {% for repo in repos %}
-                <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect"
-                    style="display: inline;"
-                    for="f_repo--{{ loop.index }}">
-                <input type="radio" id="f_repo--{{ loop.index }}"
-                        class="mdl-radio__button" name="f_repo" value="{{ repo }}"
-                        {%- if most_recent_repo == repo %} checked="checked" {% endif -%}
-                        />
-                <span class="mdl-radio__label">{{ repo }}</span>
-                </label>
-                {% if not loop.last %}
-                <br />
+        {% if slipunits_now > 0 %}
+            <p class="mdl-color-text--grey-600">
+                You can perform a ungraded autograder run to test your code without affecting your grade or slip days.
+            </p>
+            <form action="{{ url_for("dashboard.build_now") }}" method="post">
+                <input type="hidden" name="_csrf_token" value="{{ generate_csrf_token() }}" />
+                <input type="hidden" name="f_job_name" value="{{ name }}" />
+                <input type="hidden" name="f_graded" value="False" />
+                {% if repos|length > 1 %}
+                <p class="mdl-color-text--grey-600" style="margin-left: 22px; margin-bottom: 26px;">
+                {% for repo in repos %}
+                    <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect"
+                        style="display: inline;"
+                        for="f_repo--{{ loop.index }}">
+                    <input type="radio" id="f_repo--{{ loop.index }}"
+                            class="mdl-radio__button" name="f_repo" value="{{ repo }}"
+                            {%- if most_recent_repo == repo %} checked="checked" {% endif -%}
+                            />
+                    <span class="mdl-radio__label">{{ repo }}</span>
+                    </label>
+                    {% if not loop.last %}
+                    <br />
+                    {% endif %}
+                {% endfor %}
+                </p>
+                {% else %}
+                <input type="hidden" name="f_repo" value="{{ repos[0] }}" />
                 {% endif %}
-            {% endfor %}
-            </p>
-            {% else %}
-            <input type="hidden" name="f_repo" value="{{ repos[0] }}" />
-            {% endif %}
-            <p>
-                <button type="submit" class="mdl-button mdl-js-button mdl-js-ripple-effect
-                                            mdl-color--primary">
-                    Ungraded Run
-                </button>
-            </p>
-        </form>
+                <p>
+                    <button type="submit" class="mdl-button mdl-js-button mdl-js-ripple-effect
+                                                mdl-color--primary">
+                        Ungraded Run
+                    </button>
+                </p>
+            </form>
+        {% endif %}
     {% else %}
         <p class="mdl-color-text--grey-600">
             You do not have any group repositories linked to your account.
