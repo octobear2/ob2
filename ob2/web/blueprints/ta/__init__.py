@@ -464,14 +464,15 @@ def assignments_one(name, page):
         more_pages = len(builds) == page_size + 1
         if more_pages:
             builds = builds[:-1]
-        c.execute('''SELECT COUNT(*), AVG(score) FROM grades
-                     WHERE assignment = ? AND score IS NOT NULL''', [name])
+        c.execute('''SELECT COUNT(*), AVG(score) FROM grades, users
+                     WHERE assignment = ? AND score IS NOT NULL
+                     AND grades.user = users.id AND users.super = 0''', [name])
         stats = c.fetchone()
         if stats[0] == 0:
             variance = None
             stddev = None
         else:
-            c.execute("SELECT AVG((score - ?) * (score - ?)) FROM grades WHERE assignment = ?",
+            c.execute("SELECT AVG((score - ?) * (score - ?)) FROM grades, users WHERE assignment = ? AND grades.user = users.id AND users.super = 0",
                       [stats[1], stats[1], name])
             variance, = c.fetchone()
             stddev = sqrt(variance)
