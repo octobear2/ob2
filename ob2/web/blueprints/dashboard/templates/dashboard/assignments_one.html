@@ -28,27 +28,29 @@
 </div>
 <div class="mdl-cell mdl-cell--6-col">
     <h4 style="visibility: hidden;">Statistics</h4>
-    <table class="ob2-fullwidth mdl-data-table mdl-js-data-table mdl-shadow--2dp
-                  mdl-color--white">
-        <tbody>
-        {% if rank %}
-            {{ row_rank(rank, count) }}
-        {% endif %}
-            {{ row_average(average) }}
-            {{ row_standard_deviation(stddev) }}
-        {% if count %}
-            <tr>
-                <td class="mdl-data-table__cell--non-numeric ob2-no-hover" colspan="2">
-                    <svg class="ob2-graph js-ob2-graph" style="width: 100%;"
-                         data-endpoint="{{ url_for("dashboard.assignments_one_grades_json",
-                                                   name=name,
-                                                   _csrf_token=generate_csrf_token()) }}"
-                         data-type="histogram" data-aspectratio="2.5"></div>
-                </td>
-            </tr>
-        {% endif %}
-        </tbody>
-    </table>
+    {% if hide_stats == False %}
+        <table class="ob2-fullwidth mdl-data-table mdl-js-data-table mdl-shadow--2dp
+                    mdl-color--white">
+            <tbody>
+            {% if rank %}
+                {{ row_rank(rank, count) }}
+            {% endif %}
+                {{ row_average(average) }}
+                {{ row_standard_deviation(stddev) }}
+            {% if count %}
+                <tr>
+                    <td class="mdl-data-table__cell--non-numeric ob2-no-hover" colspan="2">
+                        <svg class="ob2-graph js-ob2-graph" style="width: 100%;"
+                            data-endpoint="{{ url_for("dashboard.assignments_one_grades_json",
+                                                    name=name,
+                                                    _csrf_token=generate_csrf_token()) }}"
+                            data-type="histogram" data-aspectratio="2.5"></div>
+                    </td>
+                </tr>
+            {% endif %}
+            </tbody>
+        </table>
+    {% endif %}
 </div>
 {% if manual_grading %}
 <div class="mdl-cell mdl-cell--12-col">

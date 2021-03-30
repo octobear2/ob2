@@ -171,6 +171,7 @@ def assignments_one(name):
                            slipunits_now=slipunits_now,
                            can_build=can_build,
                            manual_grading=manual_grading,
+                           hide_stats="-design" in assignment.name,
                            **template_common)
 
 
