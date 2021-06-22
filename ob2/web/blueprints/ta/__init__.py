@@ -635,6 +635,8 @@ def sql():
         try:
             if query:
                 with DbCursor(read_only=True) as c:
+                    if query in [".schema", ".tables"]:
+                        query = "SELECT * FROM sqlite_master"
                     c.execute(query)
                     query_rows = []
 
