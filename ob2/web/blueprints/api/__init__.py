@@ -18,11 +18,13 @@ blueprint.add_url_rule("/api/hello_world", "hello_world", lambda: "hello world",
 
 @send_email.bind(blueprint)
 @validates_master_secret
-def send_email(app, is_staging, sender, target, subject, body, attachments = {}):
+def send_email(app, is_staging, sender, target, subject, body, attachments = {}, extra_headers = []):
     msg = EmailMessage()
     msg["Subject"] = subject
     msg["From"] = sender
     msg["To"] = target
+    for k, v in extra_headers:
+        msg[k] = v
     msg.set_content(body)
     for attach_name, attach_content in attachments.items():
         ctype, encoding = guess_type(attach_name)
