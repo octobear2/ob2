@@ -18,7 +18,7 @@ blueprint.add_url_rule("/api/hello_world", "hello_world", lambda: "hello world",
 
 @send_email.bind(blueprint)
 @validates_master_secret
-def send_email(app, is_staging, sender, target, subject, body, attachments = {}, extra_headers = []):
+def send_email(app, is_staging, sender, target, subject, body, targets = [], attachments = {}, extra_headers = []):
     msg = EmailMessage()
     msg["Subject"] = subject
     msg["From"] = sender
@@ -39,6 +39,8 @@ def send_email(app, is_staging, sender, target, subject, body, attachments = {},
         )
     smtp_server = apply_filters("connect-to-smtp", smtplib.SMTP())
     smtp_server.send_message(msg, "cs162ta@cs162.eecs.berkeley.edu", target)
+    for target in targets:
+        smtp_server.send_message(msg, "cs162ta@cs162.eecs.berkeley.edu", target)
     smtp_server.quit()
     return ('', 202)
 # app.add_url_rule("/autograder/api/send_email", "send_email", send_email, methods=["POST"])
