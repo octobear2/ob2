@@ -192,15 +192,21 @@ def safe_get_results(output_file_path, score_file_path):
 
     """
     output = None
+    score1 = None
     try:
         with open(output_file_path, "rb") as output_file, \
                 open(score_file_path) as score_file:
             output = output_file.read(512*1024)
             score = score_file.read(128)
+            score1 = score
             score = float(score)
             return output, score
     except:
         logging.exception("safe_get_results(): failed due to exception")
+        if score1 is None:
+            logging.exception("oh no")
+        else:
+            logging.exception(":" + score1 + ":")
         if output is not None:
             logging.critical(output)
         raise JobFailedError("There was a failure in the internals of the autograder. Notify " +

@@ -21,7 +21,7 @@ def get_repo_type(repo_name):
     unidentifiable, return None.
 
     """
-    if re.match(r'^group\d+$', repo_name):
+    if re.match(r'^(staff)?group\d+$', repo_name):
         repo_type = "group"
     elif re.match(r'^[a-z]{2,3}$', repo_name):
         repo_type = "personal"
