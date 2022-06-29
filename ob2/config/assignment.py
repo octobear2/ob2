@@ -1,14 +1,15 @@
 from dateutil import parser as DateParser
+from datetime import timedelta
 
 class AssignmentStudentView(object):
-    def __init__(self, login, assignment):
+    def __init__(self, login, assignment, exceptions=None):
         self.login = login
         self.assignment = assignment
 
     def __getattr__(self, key):
-        if self.assignment.exceptions is not None:
-            for exception in self.assignment.exceptions:
-                if self.login in exception["logins"] and key in exception:
+        if self.exceptions is not None:
+            for exception in self.exceptions:
+                if key in exception:
                     return exception[key]
         return getattr(self.assignment, key)
 
@@ -27,18 +28,15 @@ class Assignment(object):
               ("due_date", str),
               ("cannot_build_after", str)]
 
-    # Apparently, the above "schema" field gets used to create a SQLite
-    # assignments table. The list of exceptions does not belong in the table,
-    # so we don't put it in "schema". But we still want to support getattr on
-    # an Assignment instance to check if a particular student is an exception,
-    # because the exception appears in the config.
-    schema_config = schema + [("exceptions", list)]
-    _index_by_key = {key: index for index, (key, _) in enumerate(schema_config)}
+    _index_by_key = {key: index for index, (key, _) in enumerate(schema)}
 
     def __init__(self, *args, **kwargs):
-        assert len(args) < len(self.schema_config)
-        args = list(args) + [None] * (len(self.schema_config) - len(args))
+        assert len(args) <= len(self.schema)
+        args = list(args) + [None] * (len(self.schema) - len(args))
         for key, value in kwargs.items():
+            # Ignore exceptions in config.yaml
+            if key == "exceptions":
+                continue
             args[self._index_by_key[key]] = value
         self.args = args
 
@@ -62,34 +60,35 @@ class Assignment(object):
             cannot_build_after = parse_time(self.cannot_build_after)
             assert (not_visible_before <= start_auto_building <= end_auto_building <=
                     cannot_build_after)
-            if self.exceptions is not None:
-                exception_not_visible_before = not_visible_before
-                exception_due_date = due_date
-                exception_start_auto_building = start_auto_building
-                exception_end_auto_building = end_auto_building
-                exception_cannot_build_after = cannot_build_after
-                for exception in self.exceptions:
-                    if "not_visible_before" in exception:
-                        exception_not_visible_before = parse_time(exception["not_visible_before"])
-                    if "due_date" in exception:
-                        exception_due_date = parse_time(exception["due_date"])
-                    if "start_auto_building" in exception:
-                        exception_start_auto_building = parse_time(exception["start_auto_building"])
-                    if "end_auto_building" in exception:
-                        exception_end_auto_building = parse_time(exception["end_auto_building"])
-                    if "cannot_build_after" in exception:
-                        exception_cannot_build_after = parse_time(exception["cannot_build_after"])
-                    assert (exception_not_visible_before <= exception_start_auto_building <=
-                            exception_end_auto_building <= exception_cannot_build_after)
 
     def __getattr__(self, key):
         return self.args[self._index_by_key[key]]
 
-    def student_view(self, login):
-        return AssignmentStudentView(login, self)
+    def student_view(self, c, login):
+        c.execute("SELECT days FROM extensions WHERE user = ? AND assignment = ?", [login, self.name])
+        extensions = c.fetchall()
+        max_days = 0
+        for days in extensions:
+            max_days = max(max_days, int(days))
 
-    def get_student_attr(self, student, key):
-        return getattr(self.student_view(student), key)
+        extend_by = timedelta(days=max_days)
+
+        exceptions = {}
+        parse_time = DateParser.parse
+
+        due_date = parse_time(self.due_date) + extend_by
+        end_auto_building = parse_time(self.end_auto_building) + extend_by
+        cannot_build_after = parse_time(self.cannot_build_after) + extend_by
+        
+        time_format = "%b %-d %-I:%-M%p"
+        exceptions["due_date"] = due_date.strftime(time_format)
+        exceptions["end_auto_building"] = end_auto_building.strftime(time_format)
+        exceptions["cannot_build_after"] = cannot_build_after.strftime(time_format)
+
+        return AssignmentStudentView(login, self, exceptions=exceptions)
+
+    def get_student_attr(self, c, student, key):
+        return getattr(self.student_view(c, student), key)
 
     def get_fields(self):
         return self.args[:]

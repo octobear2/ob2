@@ -102,3 +102,11 @@ def migrate():
             c.execute("ALTER TABLE users ADD COLUMN photo BLOB;")
             c.execute("UPDATE options SET value = '9' WHERE key = 'schema_version'")
             schema_version = "9"
+
+        # Migration 10: Create extensions table
+        if schema_version == "9":
+            print("Running migration 10: Create extensions table")
+            c.execute("CREATE TABLE extensions (extension_id INT PRIMARY KEY, user INT, assignment TEXT, days INT)")
+            c.execute("UPDATE options SET value = '10' WHERE key = 'schema_version'")
+            schema_version = "10"
+

@@ -63,6 +63,8 @@ class Worker(object):
             self.status = build_name
             self.updated = now()
 
+        assignment = None
+
         # Mark the job as In Progress
         while True:
             try:
@@ -76,6 +78,10 @@ class Worker(object):
                         return
                     source, commit, message, job_name, started = row
                     owners = get_repo_owners(c, source)
+
+                    assignment = get_assignment_by_name(job_name)
+                    assignment = assignment.student_view(c, source)
+
                     owner_emails = {owner: email for owner, (_, _, _, _, _, email)
                                     in get_users_by_ids(c, owners).items()}
                     c.execute("UPDATE builds SET status = ?, updated = ? WHERE build_name = ?",
@@ -90,8 +96,6 @@ class Worker(object):
         try:
             # if the job doesn't exist for some reason, the resulting TypeError will be caught
             # and logged
-            assignment = get_assignment_by_name(job_name)
-            assignment = assignment.student_view(source)
             due_date = assignment.due_date
             job_handler = get_job(job_name)
             log, score = job_handler(source, commit)
